@@ -82,7 +82,9 @@ class BoilerplateGenerator:
             "deployer": "agent_deployer_instructions.md.j2",
             "systems-engineer": "agent_systems_engineer_instructions.md.j2",
             "devops-specialist": "agent_devops_specialist_instructions.md.j2",
-            "orchestrator": "agent_orchestrator_instructions.md.j2"
+            "orchestrator": "agent_orchestrator_instructions.md.j2",
+            "software-engineer": "agent_software_engineer_instructions.md.j2",
+            "ai-engineer": "agent_ai_engineer_instructions.md.j2"
         }
 
         for agent in self.schema.get('agents', []):

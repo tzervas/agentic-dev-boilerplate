@@ -28,23 +28,33 @@ classifiers = [
 ]
 
 dependencies = [
-    "jinja2==3.1.6",
-    "pyyaml==6.0.3",
-    "click==8.3.1",
-    "pytest==9.0.2",
-    "pytest-cov==7.0.0",
-    "black==25.12.0",
-    "isort==7.0.0",
-    "flake8==7.3.0",
-    "mypy==1.19.1",
+
+
+
+    "jinja2",
+
+    "pyyaml",
+
+    "click",
+
+
+    "pytest",
+
+    "pytest-cov",
+
+
+    "black",
+
+    "isort",
+
+    "flake8",
+
+
+    "mypy",
+
+
+
 ]
-
-[project.scripts]
-agentic-dev-boilerplate = "agentic_dev_boilerplate.generate_boilerplate:main"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/agentic_dev_boilerplate"]
-include = ["templates/**/*"]
 
 [project.optional-dependencies]
 dev = [
@@ -69,8 +79,8 @@ dev = [
 
 ]
 docs = [
-    "sphinx==7.4.7",
-    "sphinx-rtd-theme==3.0.2",
+    "sphinx",
+    "sphinx-rtd-theme",
 ]
 
 [project.urls]

@@ -3,7 +3,7 @@ project:
   description: "Templatized repository for generating agentic development workflows and automations"
   repository: "https://github.com/tzervas/agentic-dev-boilerplate"
   private: true
-  version: "1.0.0"
+  version: "1.1.1"
 
 languages:
   - name: "python"
@@ -36,6 +36,12 @@ agents:
   - role: "orchestrator"
     enabled: true
     scope: ["multi-agent-coordination", "collaborative-problem-solving", "team-consensus"]
+  - role: "software-engineer"
+    enabled: true
+    scope: ["code-implementation", "refactoring", "architecture-design"]
+  - role: "ai-engineer"
+    enabled: true
+    scope: ["ml-model-development", "ai-integration", "data-pipeline-optimization"]
 
 workflows:
   pr_automation: true

@@ -1,89 +1,115 @@
-# agentic-dev-boilerplate
+# Agentic Dev Boilerplate
 
-Templatized repository for generating agentic development workflows and automations
+A comprehensive template system for generating agentic development workflows and automation infrastructure.
 
-
-**Version**: 1.0.0
-
-
-
+**Version**: 1.1.1  
 **Repository**: https://github.com/tzervas/agentic-dev-boilerplate
-
 
 ## Overview
 
-This project uses an agentic development workflow with automated:
-- 🤖 Multi-agent task coordination and execution
-- 🔄 PR creation, validation, and enrichment
-- 📋 Intelligent task tracking and status management
-- 🔐 Commit signing enforcement
-- 🚀 CI/CD automation with comprehensive testing
-- 📊 Quality assurance and validation
+This project provides a complete foundation for building agentic development systems with automated multi-agent coordination, intelligent task tracking, and comprehensive CI/CD pipelines. It includes specialized agents for planning, testing, debugging, deployment, and system engineering, all working together to streamline development workflows.
 
 ## Quick Start
 
-### Prerequisites
+### Installation
 
+#### From PyPI (Recommended)
+```bash
+pip install agentic-dev-boilerplate
+```
 
-- **Python** 3.11
- (uv)
+#### From Source
+```bash
+git clone https://github.com/tzervas/agentic-dev-boilerplate
+cd agentic-dev-boilerplate
+pip install -e .
+```
 
-- **Git** 2.30+
+### Generate Boilerplate
+
+Create a new project with the CLI:
+
+```bash
+# Generate boilerplate for your project
+agentic-dev-boilerplate --schema project-schema.yaml --output ./my-project
+
+# Or use short options
+agentic-dev-boilerplate -s my-schema.yaml -o ./my-project
+```
+
+## Prerequisites
+
+- **Python** 3.11 or later
+- **Git** 2.30+ (for version control)
 - **GPG** (for commit signing)
 
-### Setup
+## Development Setup
 
-1. **Clone the repository**
+1. **Install UV (fast Python package manager)**
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. **Clone the repository**
    ```bash
    git clone https://github.com/tzervas/agentic-dev-boilerplate
    cd agentic-dev-boilerplate
    ```
 
-2. **Set up development environment**
+3. **Set up development environment**
    ```bash
-   python scripts/setup_uv.py
+   uv venv
+   uv pip install -e .
    ```
 
-3. **Configure git**
+4. **Configure Git**
    ```bash
    python scripts/git_setup.py --setup
    ```
 
+## Testing
 
-4. **Set up commit signing**
-   ```bash
-   python scripts/setup_gpg.py
-   ```
+### Comprehensive Test Suite
 
+Run the complete validation suite:
+
+```bash
+./test-package.sh
+```
+
+### Docker Testing
+
+For isolated testing and validation:
+
+```bash
+# Build and run tests
+docker-compose up --build
+
+# Or build and test manually
+docker build -t agentic-boilerplate-test .
+docker run --rm agentic-boilerplate-test
+```
 
 ## Development Workflow
 
 ### 1. Task Planning
-Use the planner agent to break down features:
-```bash
-# Tasks are tracked in tasking/tracker.yaml
-# Context files are stored in tasking/context/
-```
+Use the planner agent to break down features and create implementation roadmaps. Tasks are tracked in `tasking/tracker.yaml` with context files stored in `tasking/context/`.
 
 ### 2. Implementation
 - Create feature branches: `git checkout -b feature/task-name`
 - Implement changes following project standards
-- Write tests for new functionality
+- Write comprehensive tests for new functionality
 
 ### 3. Testing & Validation
 ```bash
 # Run validation suite
 python scripts/validation_scripts.py
 
-# Run language-specific tests
-
-
+# Run tests
 uv run pytest
-
-
 ```
 
-### 4. Create PR
+### 4. Create Pull Request
 ```bash
 # Create PR with automation
 python scripts/create_pr_local.py
@@ -93,13 +119,11 @@ gh pr create --fill
 ```
 
 ### 5. Code Review
-- PRs are automatically enriched with labels and milestones
-- Validation runs automatically on PR events
-- Reviews ensure code quality and standards compliance
+Pull requests are automatically enriched with labels and milestones. Validation runs automatically on PR events to ensure code quality and standards compliance.
 
 ## Multi-Agent Coordination
 
-This project supports collaborative problem-solving through multi-agent coordination:
+The system supports collaborative problem-solving through coordinated multi-agent workflows.
 
 ### Starting Multi-Agent Sessions
 ```bash
@@ -110,36 +134,31 @@ python scripts/multi_agent_solver.py \
   --consensus-threshold 0.8
 ```
 
-### Agent Teamwork Features
-- **🤖 Orchestrated Problem Decomposition**: Complex tasks automatically broken down
-- **🔄 Cross-Agent Validation**: Solutions validated by multiple specialized agents
-- **📊 Consensus Building**: Team agreement on optimal solutions
-- **📋 Collaborative Tracking**: Shared progress and status updates
-- **🚀 Coordinated Execution**: Synchronized implementation across agents
+### Agent Coordination Features
+- **Orchestrated Problem Decomposition**: Complex tasks are automatically broken down into manageable components
+- **Cross-Agent Validation**: Solutions are validated by multiple specialized agents
+- **Consensus Building**: Team agreement on optimal approaches and solutions
+- **Collaborative Tracking**: Shared progress monitoring and status updates
+- **Coordinated Execution**: Synchronized implementation across all participating agents
 
 ### Available Agents
 
-- **Planner**: Task-Decomposition, Roadmap-Generation, Agent-Routing
-
-- **Tester**: Validation-Suites, Test-Execution, Result-Analysis
-
-- **Debugger**: Root-Cause-Analysis, Log-Processing, Patch-Development
-
-- **Deployer**: Production-Deployment, Rollback-Orchestration, Change-Management
-
-- **Systems-Engineer**: Hardware-Emulation, Iommu-Vfio, Gpu-Passthrough
-
-- **Devops-Specialist**: Infrastructure-Automation, Ci-Cd, Network-Orchestration
-
-- **Orchestrator**: Multi-Agent-Coordination, Collaborative-Problem-Solving, Team-Consensus
-
+- **Planner**: Task decomposition, roadmap generation, and agent routing
+- **Tester**: Validation suites, test execution, and result analysis
+- **Debugger**: Root cause analysis, log processing, and patch development
+- **Deployer**: Production deployment, rollback orchestration, and change management
+- **Systems Engineer**: Hardware emulation, IOMMU/VFIO configuration, and GPU passthrough
+- **DevOps Specialist**: Infrastructure automation, CI/CD pipelines, and network orchestration
+- **Orchestrator**: Multi-agent coordination, collaborative problem-solving, and team consensus
+- **Software Engineer**: Code implementation, refactoring, and architecture design
+- **AI Engineer**: ML model development, AI integration, and data pipeline optimization
 
 ### GitHub Integration
-Label issues or PRs to trigger multi-agent coordination:
+Label issues or pull requests to trigger multi-agent coordination:
 - `testing` → Involves tester agent
 - `debug` → Involves debugger agent
 - `deploy` → Involves deployer agent
-- `infra` → Involves systems engineer and devops specialist
+- `infra` → Involves systems engineer and DevOps specialist
 
 ## Project Structure
 
@@ -148,20 +167,16 @@ Label issues or PRs to trigger multi-agent coordination:
 │   ├── instructions/          # Agent instruction files
 │   ├── prompts/              # Reusable prompt templates
 │   ├── scripts/              # PR automation scripts
-│   └── workflows/            # GitHub Actions
+│   └── workflows/            # GitHub Actions CI/CD
 ├── scripts/                  # Utility scripts
 ├── tasking/                  # Task tracking system
 │   ├── tracker.yaml         # Main task tracker
 │   ├── context/             # Task context files
 │   └── plan.md              # Project roadmap
 ├── docs/                    # Documentation
-
 ├── src/                     # Source code
-
 ├── tests/                   # Test files
 ├── requirements.txt         # Python dependencies
-
-
 └── README.md
 ```
 
@@ -169,124 +184,82 @@ Label issues or PRs to trigger multi-agent coordination:
 
 ### Core Agents
 
-
-- **Planner**: Task-Decomposition, Roadmap-Generation, Agent-Routing
-
-
-
-- **Tester**: Validation-Suites, Test-Execution, Result-Analysis
-
-
-
-- **Debugger**: Root-Cause-Analysis, Log-Processing, Patch-Development
-
-
-
-- **Deployer**: Production-Deployment, Rollback-Orchestration, Change-Management
-
-
-
-- **Systems-Engineer**: Hardware-Emulation, Iommu-Vfio, Gpu-Passthrough
-
-
-
-- **Devops-Specialist**: Infrastructure-Automation, Ci-Cd, Network-Orchestration
-
-
-
-- **Orchestrator**: Multi-Agent-Coordination, Collaborative-Problem-Solving, Team-Consensus
-
-
+- **Planner**: Task decomposition, roadmap generation, and agent routing
+- **Tester**: Validation suites, test execution, and result analysis
+- **Debugger**: Root cause analysis, log processing, and patch development
+- **Deployer**: Production deployment, rollback orchestration, and change management
+- **Systems Engineer**: Hardware emulation, IOMMU/VFIO configuration, and GPU passthrough
+- **DevOps Specialist**: Infrastructure automation, CI/CD pipelines, and network orchestration
+- **Orchestrator**: Multi-agent coordination, collaborative problem-solving, and team consensus
+- **Software Engineer**: Code implementation, refactoring, and architecture design
+- **AI Engineer**: ML model development, AI integration, and data pipeline optimization
 
 ### Agent Instructions
-Each agent has specialized instructions in `.github/instructions/` that define:
-- Role and responsibilities
-- When to use specific prompts
-- Workflow integration patterns
-- Success metrics
+Each agent has specialized instructions in `.github/instructions/` that define their role, responsibilities, workflow integration patterns, and success metrics.
 
 ## Quality Assurance
 
 ### Automated Validation
-- **PR Automation**: Labels, milestones, issue linking
-- **Code Quality**: Linting, formatting, type checking
-- **Testing**: Unit, integration, and system tests
-- **Security**: Dependency scanning, vulnerability checks
+- **PR Automation**: Automatic labeling, milestone assignment, and issue linking
+- **Code Quality**: Linting, formatting, and type checking
+- **Testing**: Unit, integration, and system test coverage
+- **Security**: Dependency scanning and vulnerability assessment
 
 ### Manual Reviews
-- Code review requirements
-- Architecture decisions
-- Performance considerations
-- Security implications
+- Code review requirements and standards
+- Architecture decision documentation
+- Performance and scalability considerations
+- Security impact analysis
 
 ## Contributing
 
-1. **Follow the workflow**: Use task tracking and agent coordination
-2. **Write tests**: Ensure adequate test coverage
-3. **Sign commits**: All commits must be GPG signed
-4. **Create PRs**: Use the automated PR creation tools
+1. **Follow the workflow**: Use task tracking and agent coordination for all changes
+2. **Write tests**: Ensure comprehensive test coverage for new functionality
+3. **Sign commits**: All commits must be GPG signed for verification
+4. **Create pull requests**: Use the automated PR creation tools
 
 ### Commit Standards
 - Use conventional commit format: `type(scope): description`
-- Sign all commits: `git commit -S`
-- Reference task IDs in commit messages
+- Sign all commits with GPG: `git commit -S`
+- Reference task IDs in commit messages when applicable
 
-### PR Requirements
-- Automated validation must pass
-- Appropriate test coverage
-- Documentation updated
-- Task tracker updated
+### Pull Request Requirements
+- All automated validation checks must pass
+- Appropriate test coverage maintained
+- Documentation updated for any user-facing changes
+- Task tracker updated with completion status
 
 ## CI/CD Pipeline
 
-
 ### Pipeline Stages
-
-- **Validate**: lint, test, security
-
-- **Build**: build, package
-
-- **Deploy**: deploy staging, deploy production
-
-
+- **Validate**: Code linting, testing, and security scanning
+- **Build**: Package building and artifact creation
+- **Deploy**: Staging deployment and production releases
 
 ### Quality Gates
-
-- Lint
-
-- Test
-
-- Security
-
-
-- Minimum 80% code coverage
-
+- Code linting and formatting checks
+- Test execution with coverage requirements
+- Security vulnerability scanning
+- Minimum 80% code coverage threshold
 
 ## Security
 
-
-- **Commit Signing**: All commits must be GPG signed
-
-
-- **Dependencies**: Regular security scanning and updates
-
-
-- **Secrets**: Automated detection of exposed secrets
-
+- **Commit Signing**: All commits must be GPG signed for authenticity
+- **Dependencies**: Regular security scanning and dependency updates
+- **Secrets**: Automated detection and prevention of exposed secrets
 
 ## Documentation
 
-- **API Docs**: Manual maintenance
-- **User Guides**: Comprehensive setup and usage instructions
-- **Contributing**: Development workflow and standards
+- **API Reference**: Comprehensive API documentation
+- **User Guides**: Setup and usage instructions
+- **Contributing Guide**: Development workflow and standards
 
 ## Support
 
-- **Issues**: Use GitHub issues with appropriate labels
-- **Discussions**: Technical discussions and Q&A
-- **Documentation**: Comprehensive guides in `/docs`
+- **Issues**: Use GitHub issues with appropriate labels for bug reports and feature requests
+- **Discussions**: Technical discussions and community Q&A
+- **Documentation**: Comprehensive guides available in the `/docs` directory
 
 ## License
-
 
 See LICENSE file for details.

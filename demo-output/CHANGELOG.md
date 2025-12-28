@@ -5,25 +5,7 @@ All notable changes to agentic-dev-boilerplate will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.1] - 2025-12-27
-
-### Added
-- Comprehensive test suite with `test-package.sh` script
-- Docker container for isolated testing and validation
-- UV lock file for reproducible dependency management
-
-### Changed
-- Pinned all dependencies to specific versions for reproducibility
-- Updated to use UV for all Python package management
-- Improved package structure with templates included in wheel
-- Enhanced CI/CD with comprehensive testing
-
-### Fixed
-- Template path resolution for packaged installation
-- Package build configuration to include all necessary files
-
-### Security
-- N/A
+## [Unreleased]
 
 ### Added
 - Initial project setup with agentic development boilerplate
