@@ -262,4 +262,4 @@ Each agent has specialized instructions in `.github/instructions/` that define t
 
 ## License
 
-See LICENSE file for details.
+MIT License. See LICENSE file for details.
