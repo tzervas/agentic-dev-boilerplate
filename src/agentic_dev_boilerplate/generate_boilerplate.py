@@ -19,7 +19,7 @@ class BoilerplateGenerator:
         self.schema_path = Path(schema_path)
         self.output_dir = Path(output_dir) if output_dir else Path.cwd()
         self.schema = self.load_schema()
-        self.templates_dir = Path(__file__).parent / "templates"
+        self.templates_dir = Path(__file__).parent.parent / "templates"
         self.jinja_env = Environment(loader=FileSystemLoader(str(self.templates_dir)))
 
     def load_schema(self) -> Dict[str, Any]:

@@ -19,9 +19,9 @@ from enum import Enum
 import logging
 
 # Add the project root to Python path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from tmp_manager import TmpManager, get_tmp_manager
+from .tmp_manager import TmpManager, get_tmp_manager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
