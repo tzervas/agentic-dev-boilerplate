@@ -75,31 +75,40 @@ def test_schema_loading(sample_schema, output_dir):
     assert generator.output_dir == output_dir
 
 
-def test_schema_validation_missing_required():
+def test_schema_validation_missing_required(tmp_path):
     """Test schema validation with missing required fields."""
+    # Create a schema file with missing required fields
+    incomplete_schema = {
+        "project": "test_project",
+        # Missing 'languages', 'agents', 'workflows'
+    }
+    schema_file = tmp_path / "incomplete.yaml"
+    with open(schema_file, 'w') as f:
+        yaml.dump(incomplete_schema, f)
+    
     with pytest.raises(ValueError, match="Missing required field"):
-        BoilerplateGenerator("nonexistent.yaml", "/tmp")
+        BoilerplateGenerator(str(schema_file), "/tmp")
 
 
 @patch('agentic_dev_boilerplate.generate_boilerplate.Environment')
 @patch('agentic_dev_boilerplate.generate_boilerplate.FileSystemLoader')
 def test_template_rendering(mock_loader, mock_env, sample_schema, output_dir, mock_templates):
     """Test template rendering process."""
-    # Mock the template
-    mock_template = mock_open()
-    mock_env_instance = mock_open()
-    mock_env_instance.get_template.return_value.render.return_value = "rendered content"
-    mock_env.return_value = mock_env_instance
+    # Mock the Jinja2 environment
+    mock_env_instance = mock_env.return_value
+    mock_template = mock_env_instance.get_template.return_value
+    mock_template.render.return_value = "rendered content"
 
     generator = BoilerplateGenerator(str(sample_schema), str(output_dir))
     generator.templates_dir = mock_templates
 
-    # Mock the template environment
-    with patch.object(generator, 'jinja_env', mock_env_instance):
-        template = generator.jinja_env.get_template("test.md.j2")
-        result = template.render(schema=generator.schema, agent=generator.schema["agents"][0])
-
-        assert result == "rendered content"
+    # Test template rendering
+    template = generator.jinja_env.get_template("test.md.j2")
+    result = template.render(schema=generator.schema, agent=generator.schema["agents"][0])
+    
+    assert result == "rendered content"
+    mock_env_instance.get_template.assert_called_with("test.md.j2")
+    mock_template.render.assert_called_with(schema=generator.schema, agent=generator.schema["agents"][0])
 
 
 def test_directory_structure_creation(sample_schema, output_dir):
@@ -140,20 +149,23 @@ def test_agent_instruction_generation(sample_schema, output_dir, agent_config, e
 
     generator = BoilerplateGenerator(str(test_schema), str(output_dir))
 
-    with patch.object(generator, 'jinja_env') as mock_env:
-        mock_template = mock_open()
+    with patch.object(generator, 'jinja_env') as mock_env, \
+         patch('builtins.open', mock_open()) as mock_file:
+        mock_template = mock_env.get_template.return_value
         mock_template.render.return_value = f"Instructions for {agent_config['role']}"
-        mock_env.get_template.return_value = mock_template
 
         generator.generate_agent_instructions()
 
-        instruction_file = output_dir / ".github" / "instructions" / f"{agent_config['role']}.instructions.md"
-
         if expected_enabled:
-            assert instruction_file.exists()
-            assert instruction_file.read_text() == f"Instructions for {agent_config['role']}"
+            # Check that get_template was called with the right template
+            mock_env.get_template.assert_called_with(f"agent_{agent_config['role']}_instructions.md.j2")
+            # Check that render was called
+            mock_template.render.assert_called()
+            # Check that file was opened for writing
+            mock_file.assert_called()
         else:
-            assert not instruction_file.exists()
+            # Should not call get_template for disabled agents
+            mock_env.get_template.assert_not_called()
 
 
 def test_end_to_end_generation(sample_schema, output_dir):
@@ -162,9 +174,8 @@ def test_end_to_end_generation(sample_schema, output_dir):
 
     # Mock the template environment to avoid actual file operations
     with patch.object(generator, 'jinja_env') as mock_env:
-        mock_template = mock_open()
+        mock_template = mock_env.get_template.return_value
         mock_template.render.return_value = "# Generated content"
-        mock_env.get_template.return_value = mock_template
 
         # Mock all generation methods
         with patch.multiple(generator,

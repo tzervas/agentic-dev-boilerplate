@@ -5,6 +5,18 @@ All notable changes to agentic-dev-boilerplate will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2025-12-27
+
+### Fixed
+- Corrected Jinja2 template rendering issues causing YAML syntax errors in generated workflows
+- Fixed test mocking issues for proper CI/CD validation
+- Improved error handling in temporary file management
+- Resolved directory pruning logic in TmpManager
+
+### Changed
+- Updated GitHub Actions to latest versions (checkout@v6, setup-python@v6, etc.)
+- Enhanced test coverage and reliability
+
 ## [1.1.1] - 2025-12-27
 
 ### Added

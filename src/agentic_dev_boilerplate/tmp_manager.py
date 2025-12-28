@@ -82,8 +82,11 @@ class TmpManager:
         context_file = self.get_task_dir(task_id) / "context.json"
         if context_file.exists():
             import json
-            with open(context_file, 'r') as f:
-                return json.load(f)
+            try:
+                with open(context_file, 'r') as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, ValueError):
+                return None
         return None
 
     def write_subtask_data(self, task_id: str, subtask_id: str, filename: str, data: bytes) -> Path:
@@ -143,12 +146,13 @@ class TmpManager:
 
             # Also limit total number of project directories
             project_dirs = sorted(
-                [d for d in self.config.base_tmp_dir.iterdir() if d.is_dir()],
+                [d for d in self.config.base_tmp_dir.iterdir() if d.is_dir() and d != self.project_tmp_dir],
                 key=lambda d: d.stat().st_mtime
             )
 
-            if len(project_dirs) > self.config.max_project_dirs:
-                to_remove = project_dirs[:-self.config.max_project_dirs]
+            num_to_keep = self.config.max_project_dirs - 1
+            if len(project_dirs) > num_to_keep:
+                to_remove = project_dirs[:len(project_dirs) - num_to_keep]
                 for old_dir in to_remove:
                     try:
                         shutil.rmtree(old_dir)
