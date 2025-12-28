@@ -195,4 +195,5 @@ def get_tmp_manager(project_name: str, config: Optional[TmpConfig] = None) -> Tm
         _default_managers[project_name] = TmpManager(project_name, config)
     manager = _default_managers[project_name]
     manager.prune_old_directories()  # Check for pruning on access
-    return manager
+    return manager</content>
+<parameter name="filePath">/home/spooky/Documents/projects/bootdisk/agentic-dev-boilerplate/tmp_manager.py
