@@ -1,0 +1,145 @@
+# {{ project_slug }}/agents/core/workflows.py
+
+"""Workflow coordination for multi-agent collaboration."""
+
+import asyncio
+import logging
+from typing import Dict, List, Any, Callable
+from enum import Enum
+
+logger = logging.getLogger(__name__)
+
+
+class WorkflowPhase(Enum):
+    """Workflow execution phases."""
+    PLANNING = "planning"
+    EXECUTION = "execution"
+    REVIEW = "review"
+    DEPLOYMENT = "deployment"
+
+
+class WorkflowStep:
+    """A single step in a workflow."""
+
+    def __init__(self, name: str, agent: str, action: Callable, dependencies: List[str] = None):
+        self.name = name
+        self.agent = agent
+        self.action = action
+        self.dependencies = dependencies or []
+        self.result = None
+        self.status = "pending"
+
+    async def execute(self, context: Dict[str, Any]) -> Any:
+        """Execute this workflow step."""
+        try:
+            self.status = "running"
+            logger.info(f"Executing step: {self.name}")
+
+            self.result = await self.action(context)
+            self.status = "completed"
+
+            logger.info(f"Step completed: {self.name}")
+            return self.result
+
+        except Exception as e:
+            self.status = "failed"
+            logger.error(f"Step failed: {self.name} - {e}")
+            raise
+
+
+class WorkflowCoordinator:
+    """Coordinates multi-agent workflows."""
+
+    def __init__(self):
+        self.workflows: Dict[str, List[WorkflowStep]] = {}
+        self.active_executions: Dict[str, asyncio.Task] = {}
+
+    def register_workflow(self, name: str, steps: List[WorkflowStep]) -> None:
+        """Register a new workflow."""
+        self.workflows[name] = steps
+        logger.info(f"Registered workflow: {name} with {len(steps)} steps")
+
+    async def execute_workflow(self, name: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute a registered workflow."""
+        if name not in self.workflows:
+            raise ValueError(f"Workflow '{name}' not found")
+
+        execution_id = f"{name}_{asyncio.get_event_loop().time()}"
+        logger.info(f"Starting workflow execution: {execution_id}")
+
+        # Create execution task
+        task = asyncio.create_task(self._execute_workflow_steps(name, context, execution_id))
+        self.active_executions[execution_id] = task
+
+        try:
+            result = await task
+            logger.info(f"Workflow execution completed: {execution_id}")
+            return result
+        finally:
+            del self.active_executions[execution_id]
+
+    async def _execute_workflow_steps(self, workflow_name: str, context: Dict[str, Any], execution_id: str) -> Dict[str, Any]:
+        """Execute workflow steps with dependency resolution."""
+        steps = self.workflows[workflow_name]
+        completed_steps: Dict[str, Any] = {}
+        pending_steps = {step.name: step for step in steps}
+
+        while pending_steps:
+            # Find steps with satisfied dependencies
+            executable_steps = []
+            for step_name, step in pending_steps.items():
+                if all(dep in completed_steps for dep in step.dependencies):
+                    executable_steps.append(step)
+
+            if not executable_steps:
+                # Circular dependency or unsatisfied dependencies
+                remaining = list(pending_steps.keys())
+                raise RuntimeError(f"Cannot execute remaining steps: {remaining}")
+
+            # Execute steps concurrently
+            tasks = []
+            for step in executable_steps:
+                task = asyncio.create_task(step.execute(context))
+                tasks.append((step.name, task))
+
+            # Wait for completion
+            for step_name, task in tasks:
+                try:
+                    result = await task
+                    completed_steps[step_name] = result
+                    del pending_steps[step_name]
+                except Exception as e:
+                    logger.error(f"Step execution failed: {step_name} - {e}")
+                    raise
+
+        return completed_steps
+
+    def get_workflow_status(self, execution_id: str) -> Dict[str, Any]:
+        """Get status of a workflow execution."""
+        if execution_id not in self.active_executions:
+            return {"status": "not_found"}
+
+        task = self.active_executions[execution_id]
+        if task.done():
+            try:
+                return {"status": "completed", "result": task.result()}
+            except Exception as e:
+                return {"status": "failed", "error": str(e)}
+        else:
+            return {"status": "running"}
+
+    async def cancel_execution(self, execution_id: str) -> bool:
+        """Cancel a running workflow execution."""
+        if execution_id not in self.active_executions:
+            return False
+
+        task = self.active_executions[execution_id]
+        task.cancel()
+
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
+        del self.active_executions[execution_id]
+        return True

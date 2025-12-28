@@ -10,16 +10,18 @@ import yaml
 import json
 import shutil
 from pathlib import Path
-from typing import Dict, Any, List
 from jinja2 import Environment, FileSystemLoader
 import click
+from typing import Dict, Any, List
+
 
 class BoilerplateGenerator:
-    def __init__(self, schema_path: str, output_dir: str = None):
+    def __init__(self, schema_path: str, output_dir: str = None, template_type: str = "default"):
         self.schema_path = Path(schema_path)
         self.output_dir = Path(output_dir) if output_dir else Path.cwd()
+        self.template_type = template_type
         self.schema = self.load_schema()
-        self.templates_dir = Path(__file__).parent / "templates"
+        self.templates_dir = Path(__file__).parent.parent.parent / "templates" / self.template_type if self.template_type != "default" else Path(__file__).parent.parent.parent / "templates"
         self.jinja_env = Environment(loader=FileSystemLoader(str(self.templates_dir)))
 
     def load_schema(self) -> Dict[str, Any]:
@@ -75,17 +77,24 @@ class BoilerplateGenerator:
         """Generate agent instruction files."""
         click.echo("🤖 Generating agent instructions...")
 
-        agent_templates = {
-            "planner": "agent_planner_instructions.md.j2",
-            "tester": "agent_tester_instructions.md.j2",
-            "debugger": "agent_debugger_instructions.md.j2",
-            "deployer": "agent_deployer_instructions.md.j2",
-            "systems-engineer": "agent_systems_engineer_instructions.md.j2",
-            "devops-specialist": "agent_devops_specialist_instructions.md.j2",
-            "orchestrator": "agent_orchestrator_instructions.md.j2",
-            "software-engineer": "agent_software_engineer_instructions.md.j2",
-            "ai-engineer": "agent_ai_engineer_instructions.md.j2"
-        }
+        # Define template mappings based on template type
+        if self.template_type == "bootdisk-agentic-structure":
+            agent_templates = {
+                "swe": "agent_swe_instructions.md.j2",
+                "test_engineer": "agent_test_engineer_instructions.md.j2"
+            }
+        else:
+            agent_templates = {
+                "planner": "agent_planner_instructions.md.j2",
+                "tester": "agent_tester_instructions.md.j2",
+                "debugger": "agent_debugger_instructions.md.j2",
+                "deployer": "agent_deployer_instructions.md.j2",
+                "systems-engineer": "agent_systems_engineer_instructions.md.j2",
+                "devops-specialist": "agent_devops_specialist_instructions.md.j2",
+                "orchestrator": "agent_orchestrator_instructions.md.j2",
+                "software-engineer": "agent_software_engineer_instructions.md.j2",
+                "ai-engineer": "agent_ai_engineer_instructions.md.j2"
+            }
 
         for agent in self.schema.get('agents', []):
             if not agent.get('enabled', True):
@@ -442,12 +451,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 @click.command()
+@click.option('--template', '-t', default='default', help='Template type to use')
 @click.option('--schema', '-s', default='project-schema.yaml', help='Path to project schema file')
 @click.option('--output', '-o', default=None, help='Output directory (default: current directory)')
-def main(schema, output):
+def main(schema, output, template):
     """Generate agentic development boilerplate from schema."""
     try:
-        generator = BoilerplateGenerator(schema, output)
+        generator = BoilerplateGenerator(schema, output, template)
         generator.generate()
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)

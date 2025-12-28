@@ -1,0 +1,10 @@
+# {{ project_slug }}/agents/__init__.py
+
+"""AI Agent orchestration for {{ project_name }}."""
+
+__version__ = "{{ version }}"
+
+from .core.manager import AgentManager
+from .core.workflows import WorkflowCoordinator
+
+__all__ = ["AgentManager", "WorkflowCoordinator"]

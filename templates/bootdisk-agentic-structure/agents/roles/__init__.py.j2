@@ -1,0 +1,42 @@
+# {{ project_slug }}/agents/roles/__init__.py
+
+"""Agent role implementations."""
+
+from .swe import SoftwareEngineerAgent
+from .test_engineer import TestEngineerAgent
+from .project_manager import ProjectManagerAgent
+from .qa_evaluator import QAEvaluatorAgent
+from .communicator import CommunicatorAgent
+from .devops import DevOpsAgent
+from .security import SecurityAgent
+from .documentation import DocumentationAgent
+
+__all__ = [
+    "SoftwareEngineerAgent",
+    "TestEngineerAgent",
+    "ProjectManagerAgent",
+    "QAEvaluatorAgent",
+    "CommunicatorAgent",
+    "DevOpsAgent",
+    "SecurityAgent",
+    "DocumentationAgent"
+]
+
+
+def get_agent_role(role_name: str):
+    """Get agent role class by name."""
+    role_map = {
+        "swe": SoftwareEngineerAgent,
+        "test_engineer": TestEngineerAgent,
+        "project_manager": ProjectManagerAgent,
+        "qa_evaluator": QAEvaluatorAgent,
+        "communicator": CommunicatorAgent,
+        "devops": DevOpsAgent,
+        "security": SecurityAgent,
+        "documentation": DocumentationAgent
+    }
+
+    if role_name not in role_map:
+        raise ValueError(f"Unknown agent role: {role_name}")
+
+    return role_map[role_name]

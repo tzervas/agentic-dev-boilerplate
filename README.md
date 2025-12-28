@@ -35,7 +35,14 @@ agentic-dev-boilerplate --schema project-schema.yaml --output ./my-project
 
 # Or use short options
 agentic-dev-boilerplate -s my-schema.yaml -o ./my-project
+
+# Use a specific template (default: default)
+agentic-dev-boilerplate --template bootdisk-agentic-structure --schema my-schema.yaml --output ./my-project
 ```
+
+**Available Templates:**
+- `default`: Standard agentic development boilerplate
+- `bootdisk-agentic-structure`: Bootdisk project structure with integrated agentic workflows
 
 ## Prerequisites
 

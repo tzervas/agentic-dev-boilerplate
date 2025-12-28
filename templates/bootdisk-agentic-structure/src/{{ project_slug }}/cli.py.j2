@@ -1,0 +1,100 @@
+# {{ project_slug }}/cli.py
+
+"""Command-line interface for {{ project_name }}."""
+
+import asyncio
+import click
+from pathlib import Path
+from typing import Optional
+
+from .core.config import load_config
+from .agents import AgentManager
+
+
+@click.group()
+@click.option('--config', '-c', type=click.Path(exists=True),
+              help='Path to configuration file')
+@click.option('--verbose', '-v', is_flag=True, help='Enable verbose logging')
+@click.pass_context
+def cli(ctx: click.Context, config: Optional[str], verbose: bool) -> None:
+    """{{ project_name }} - {{ project_description }}"""
+
+    # Load configuration
+    config_path = Path(config) if config else Path("config/project.yaml")
+    ctx.obj = {
+        'config': load_config(config_path),
+        'verbose': verbose
+    }
+
+
+@cli.command()
+@click.pass_obj
+def status(obj: dict) -> None:
+    """Show system status."""
+    config = obj['config']
+    click.echo(f"{{ project_name }} v{config.version}")
+    click.echo(f"Status: Operational")
+
+
+@cli.command()
+@click.option('--workflow', '-w', default='development',
+              help='Workflow to execute')
+@click.pass_obj
+def agent(obj: dict, workflow: str) -> None:
+    """Run agent workflows."""
+    config = obj['config']
+
+    async def run_workflow():
+        manager = AgentManager(config.agents)
+        await manager.initialize_agents()
+
+        try:
+            result = await manager.execute_workflow(workflow, {})
+            click.echo(f"Workflow '{workflow}' completed successfully")
+            return result
+        finally:
+            await manager.shutdown()
+
+    asyncio.run(run_workflow())
+
+
+@cli.command()
+@click.argument('target', type=click.Path(exists=True))
+@click.pass_obj
+def build(obj: dict, target: str) -> None:
+    """Build the project."""
+    click.echo(f"Building {target}...")
+    # Build logic here
+    click.echo("Build completed successfully")
+
+
+@cli.command()
+@click.pass_obj
+def test(obj: dict) -> None:
+    """Run test suite."""
+    click.echo("Running tests...")
+    # Test logic here
+    click.echo("All tests passed")
+
+
+@cli.command()
+@click.option('--port', '-p', default=8000, help='Port to serve on')
+@click.pass_obj
+def serve(obj: dict, port: int) -> None:
+    """Start the development server."""
+    click.echo(f"Starting server on port {port}...")
+    # Server logic here
+    click.echo("Server started")
+
+
+async def main() -> None:
+    """Main entry point."""
+    try:
+        cli()
+    except Exception as e:
+        click.echo(f"Error: {e}", err=True)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
