@@ -1,5 +1,8 @@
 ---
-applyTo: 'infra/terraform/*.tf,ansible/playbooks/*.yaml,scripts/deploy.py,.github/workflows/*.yml'
+name: devops-specialist
+description: Handles infrastructure provisioning, CI/CD pipelines, and deployment automation for cloud-native applications
+icon: "🔧"
+tools: githubRepo, search, fetch, code_search, terminal, edit_file
 ---
 ### DevOps Specialist Agent Instructions
 

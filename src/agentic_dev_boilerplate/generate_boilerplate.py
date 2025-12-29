@@ -106,6 +106,15 @@ class BoilerplateGenerator:
                 "orchestrator": "agent_orchestrator_instructions.md.j2",
                 "software-engineer": "agent_software_engineer_instructions.md.j2",
                 "ai-engineer": "agent_ai_engineer_instructions.md.j2",
+                "security": "agent_security_instructions.md.j2",
+                "api-developer": "agent_api_developer_instructions.md.j2",
+                "project-manager": "agent_project_manager_instructions.md.j2",
+                "frontend-developer": "frontend-developer.agent.md",
+                "backend-developer": "backend-developer.agent.md",
+                "fullstack-developer": "fullstack-developer.agent.md",
+                "mobile-developer": "mobile-developer.agent.md",
+                "data-scientist": "data-scientist.agent.md",
+                "ml-engineer": "ml-engineer.agent.md",
             }
 
         for agent in self.schema.get("agents", []):
@@ -430,6 +439,19 @@ echo "✅ Commit is properly signed"
             except Exception as e:
                 click.echo(
                     f"⚠️ Skipping README.md generation: template README.md.j2 not found or error: {e}"
+                )
+
+        if self.schema.get("project", {}).get("license"):
+            try:
+                template = self.jinja_env.get_template("LICENSE.j2")
+                content = template.render(schema=self.schema)
+
+                output_path = self.output_dir / "LICENSE"
+                with open(output_path, "w") as f:
+                    f.write(content)
+            except Exception as e:
+                click.echo(
+                    f"⚠️ Skipping LICENSE generation: template LICENSE.j2 not found or error: {e}"
                 )
 
         if docs_config.get("contributing_guide"):

@@ -28,7 +28,7 @@ applyTo: 'scripts/deploy.py,infra/deploy/*.tf,logs/deploy/*.log'
 **Use**: [Testing and Validation](.github/prompts/testing-validation.md)
 **Rationale**: Ensure deployments are successful and stable
 
-## Deployment Lifecycle Management
+## Domain Workflows
 
 ### Pre-Deployment Preparation
 1. **Impact Assessment**: Evaluate change scope and risk
@@ -48,8 +48,7 @@ applyTo: 'scripts/deploy.py,infra/deploy/*.tf,logs/deploy/*.log'
 3. **Documentation**: Update status and configurations
 4. **Handoff**: Transition to operational teams
 
-## Deployment Patterns
-
+## Common Patterns
 
 ### Python Application Deployment
 ```
@@ -62,7 +61,6 @@ Validation:
 - Performance: Basic load testing
 ```
 
-
 ### Infrastructure Deployment
 ```
 Context: Infrastructure provisioning and configuration
@@ -74,27 +72,7 @@ Validation:
 - Monitoring: Health check endpoints
 ```
 
-### Rollback and Recovery
-
-### Rollback Strategies
-- **Version Rollback**: Revert to previous application version
-- **Configuration Restore**: Restore previous configuration files
-- **Database Rollback**: Revert database schema/data changes
-- **Infrastructure Rollback**: Destroy/recreate resources
-
-### Recovery Procedures
-1. **Assessment**: Determine rollback scope and method
-2. **Preparation**: Ensure rollback path is clear
-3. **Execution**: Apply rollback safely
-4. **Validation**: Confirm system stability post-rollback
-
-### Safety Measures
-- **Zero Downtime**: Plan for service continuity
-- **Data Preservation**: Protect user data during rollbacks
-- **Gradual Rollback**: Incremental reversion when possible
-- **Testing**: Validate rollback procedures
-
-## Change Management
+## Best Practices
 
 ### Change Planning
 - **Risk Assessment**: Evaluate potential impact
@@ -114,7 +92,61 @@ Validation:
 - **Performance Monitoring**: Check for performance impacts
 - **Security Validation**: Confirm security posture maintained
 
-## Monitoring and Observability
+## Validation and Testing
+
+### Pre-Deployment Validation
+```bash
+# Code validation
+python scripts/validation_scripts.py
+
+# Configuration checks
+terraform validate
+ansible-playbook --check
+
+# Integration tests
+python -m pytest tests/integration/
+```
+
+### Post-Deployment Validation
+```bash
+# System validation
+python scripts/validation_scripts.py
+
+# Service checks
+systemctl --failed
+systemctl status --all
+
+# Application validation
+uv run python -c "import agentic_dev_boilerplate; print('Import successful')"
+```
+
+### Rollback Testing
+- **Dry Run**: Test rollback procedures without execution
+- **Partial Rollback**: Test rollback of individual components
+- **Full Rollback**: Validate complete system restoration
+- **Data Integrity**: Ensure data consistency post-rollback
+
+## Deployment Orchestration
+
+### Rollback Strategies
+- **Version Rollback**: Revert to previous application version
+- **Configuration Restore**: Restore previous configuration files
+- **Database Rollback**: Revert database schema/data changes
+- **Infrastructure Rollback**: Destroy/recreate resources
+
+### Recovery Procedures
+1. **Assessment**: Determine rollback scope and method
+2. **Preparation**: Ensure rollback path is clear
+3. **Execution**: Apply rollback safely
+4. **Validation**: Confirm system stability post-rollback
+
+### Safety Measures
+- **Zero Downtime**: Plan for service continuity
+- **Data Preservation**: Protect user data during rollbacks
+- **Gradual Rollback**: Incremental reversion when possible
+- **Testing**: Validate rollback procedures
+
+## Monitoring and Alerting
 
 ### Deployment Monitoring
 ```bash
@@ -130,30 +162,19 @@ curl http://localhost/health
 systemctl status agentic-dev-boilerplate
 ```
 
-### Post-Deployment Validation
-```bash
-# System validation
-python scripts/validation_scripts.py
-
-# Service checks
-systemctl --failed
-systemctl status --all
-
-# Application validation
-
-
-uv run python -c "import agentic-dev-boilerplate; print('Import successful')"
-
-
-```
-
 ### Alert Configuration
 - **Threshold Monitoring**: Set up resource alerts
 - **Service Monitoring**: Track service health
 - **Performance Baselines**: Establish normal operating ranges
 - **Anomaly Detection**: Identify unusual patterns
 
-## Coordination and Communication
+### Observability Setup
+- **Metrics Collection**: Application and infrastructure metrics
+- **Log Aggregation**: Centralized logging for troubleshooting
+- **Tracing**: Request tracing for performance analysis
+- **Dashboards**: Real-time monitoring dashboards
+
+## Escalation and Handoff
 
 ### Stakeholder Management
 - **Pre-Deployment**: Schedule and communicate changes
@@ -161,17 +182,23 @@ uv run python -c "import agentic-dev-boilerplate; print('Import successful')"
 - **Post-Deployment**: Report results and any issues
 - **Issue Resolution**: Coordinate with relevant teams
 
-### Team Coordination
+### When to Escalate
+- **Infrastructure Issues**: Systems Engineer for hardware problems
+- **Application Issues**: Development teams for code problems
+- **Security Issues**: Security team for vulnerabilities
+- **Performance Issues**: DevOps Specialist for optimization
+
+### Coordination Patterns
 - **With Planner**: Deployment planning and scheduling
 - **With Tester**: Pre and post-deployment validation
 - **With Debugger**: Issue diagnosis during deployment
-- **With DevOps**: Infrastructure and automation support
+- **With DevOps Specialist**: Infrastructure and automation support
 
-### Documentation Requirements
-- **Change Records**: Document all deployment activities
+### Handoff Preparation
+- **Complete Documentation**: All deployment activities recorded
 - **Issue Logs**: Record any problems encountered
 - **Resolution Steps**: Detail how issues were resolved
-- **Lessons Learned**: Capture improvements for future deployments
+- **Operational Notes**: Hand off monitoring and maintenance responsibilities
 
 ## Success Metrics
 - **Deployment Success**: 100% successful production deployments

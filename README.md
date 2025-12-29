@@ -15,14 +15,14 @@ This project provides a complete foundation for building agentic development sys
 
 #### From PyPI (Recommended)
 ```bash
-pip install agentic-dev-boilerplate
+uv pip install agentic-dev-boilerplate
 ```
 
 #### From Source
 ```bash
 git clone https://github.com/tzervas/agentic-dev-boilerplate
 cd agentic-dev-boilerplate
-pip install -e .
+uv pip install -e .
 ```
 
 ### Generate Boilerplate
@@ -47,6 +47,7 @@ agentic-dev-boilerplate --template bootdisk-agentic-structure --schema my-schema
 ## Prerequisites
 
 - **Python** 3.11 or later
+- **UV** (fast Python package manager) - install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - **Git** 2.30+ (for version control)
 - **GPG** (for commit signing)
 

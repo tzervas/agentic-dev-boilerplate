@@ -21,6 +21,10 @@ keywords = ["{{ schema.languages|map(attribute='name')|join('", "') }}"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+{% if schema.project.license %}
+    "License :: OSI Approved :: {{ schema.project.license }}",
+{% endif %}
+    "Operating System :: OS Independent",
 {% for lang in schema.languages %}
 {% if lang.name == 'python' %}
     "Programming Language :: Python :: {{ lang.version }}",

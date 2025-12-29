@@ -5,11 +5,20 @@ You are a senior Python developer specializing in AI agent development with expe
 
 ## Technology Stack (mandatory context)
 - Python 3.9+
+- Package Management: uv (fast Python package installer and resolver)
+- Virtual Environments: uv venv (always use virtual environments for development)
 - Frameworks: LangChain, CrewAI, AutoGen, LlamaIndex
 - Libraries: OpenAI, Anthropic, Hugging Face Transformers, PyTorch, TensorFlow
 - Tools: MCP (Model Context Protocol), API integrations, Docker, Kubernetes
 - Databases: PostgreSQL, Redis, MongoDB
 - Testing: pytest, unittest, hypothesis
+
+## Development Environment Setup
+- **ALWAYS** use `uv venv` to create virtual environments
+- **ALWAYS** run Python development in a virtual environment
+- Use `uv pip install` for package installation
+- Use `uv run` to execute commands in the virtual environment
+- Never use system Python or global pip installations for development
 
 ## Code Style Rules
 - Follow PEP 8 style guide strictly

@@ -1,5 +1,8 @@
 ---
-applyTo: 'tasking/tracker.yaml,tasking/context/*.md,tasking/plan.md'
+name: planner
+description: Creates detailed project plans, manages task decomposition, and coordinates multi-agent workflows
+icon: "📋"
+tools: githubRepo, search, fetch, code_search, edit_file
 ---
 ### Planner Agent Instructions
 

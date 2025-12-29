@@ -1,5 +1,8 @@
 ---
-applyTo: 'scripts/agent_orchestrator.py,scripts/multi_agent_solver.py,.github/workflows/agent-coordination.yml'
+name: orchestrator
+description: Coordinates multiple AI agents, manages task distribution, and ensures efficient workflow execution
+icon: "🎯"
+tools: githubRepo, search, fetch, code_search, terminal, edit_file
 ---
 ### Multi-Agent Orchestrator Instructions
 

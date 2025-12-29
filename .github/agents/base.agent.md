@@ -1,5 +1,8 @@
 ---
-applyTo: 'tasking/tracker.yaml,tasking/context/*.md,tasking/plan.md'
+name: base
+description: General-purpose agent for basic development tasks and project coordination
+icon: "🔧"
+tools: githubRepo, search, fetch, code_search, edit_file
 ---
 ### {{ agent.role|title }} Agent Instructions
 

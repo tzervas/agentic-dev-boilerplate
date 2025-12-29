@@ -1,5 +1,8 @@
 ---
-applyTo: 'scripts/deploy.py,infra/deploy/*.tf,logs/deploy/*.log'
+name: deployer
+description: Idempotent orchestrator for executing deployments, post-install runs, and handoffs with rollback safeguards
+icon: 🚀
+tools: githubRepo, search, fetch, code_search, terminal, edit_file
 ---
 ### Deployer Agent Instructions
 

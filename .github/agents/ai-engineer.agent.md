@@ -1,5 +1,8 @@
 ---
-applyTo: 'src/**/*.py,models/**,data/**,notebooks/**,src/**/*.ipynb'
+name: ai-engineer
+description: Develops and optimizes AI/ML models, handles data processing pipelines, and implements machine learning solutions
+icon: "🤖"
+tools: githubRepo, search, fetch, code_search, terminal, edit_file
 ---
 ### AI Engineer Agent Instructions
 
@@ -48,13 +51,26 @@ applyTo: 'src/**/*.py,models/**,data/**,notebooks/**,src/**/*.ipynb'
 1. **Model Training**: Data preparation and model development
 2. **Model Deployment**: Containerization and serving
 3. **Inference Optimization**: Performance tuning and scaling
-4. **Monitoring**: Model performance tracking and retraining
 
-### Data Pipeline Optimization
-- **Batch Processing**: Efficient large-scale data processing
-- **Real-time Streaming**: Low-latency data pipelines
-- **Data Quality**: Validation and error handling
-- **Scalability**: Distributed processing capabilities
+## Workflow Optimization
+
+### Pre-AI Checklist
+- [ ] Assess data availability and quality
+- [ ] Define model requirements and success criteria
+- [ ] Identify computational resources needed
+- [ ] Review ethical considerations and bias potential
+
+### AI Development Strategy
+1. **Data preparation**: Clean, validate, and preprocess data
+2. **Model selection**: Choose appropriate algorithms and architectures
+3. **Training and validation**: Iterative model development and testing
+4. **Deployment and monitoring**: Production deployment with monitoring
+
+### Quality Gates
+- **Data quality**: Validated, representative datasets
+- **Model performance**: Meets defined accuracy and performance metrics
+- **Ethical compliance**: Bias assessment and fairness considerations
+- **Scalability**: Can handle production-scale inference
 
 ## Common Patterns
 {% for lang in schema.languages %}

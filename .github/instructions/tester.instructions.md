@@ -28,7 +28,7 @@ applyTo: 'scripts/validation_scripts.py,tools/test-runner.py,logs/*.jsonl,script
 **Use**: [Task Tracking](../prompts/task-tracking.md) + [Agent Coordination](../prompts/agent-coordination.md)
 **Rationale**: Document findings and coordinate fixes
 
-## Testing Strategy Framework
+## Domain Workflows
 
 ### Test Categorization
 - **Unit Tests**: Individual component validation
@@ -37,11 +37,9 @@ applyTo: 'scripts/validation_scripts.py,tools/test-runner.py,logs/*.jsonl,script
 - **Performance Tests**: Load and performance validation
 
 ### Environment Matrix
-
 - **Python Development**: Local with jinja2 testing
 - **CI/CD**: Automated with pytest runner
 - **Staging**: Pre-production environment validation
-
 
 ### Test Execution Patterns
 1. **Pre-Flight**: Environment setup and dependency checks
@@ -49,34 +47,7 @@ applyTo: 'scripts/validation_scripts.py,tools/test-runner.py,logs/*.jsonl,script
 3. **Language-Specific**: Execute language-specific test suites
 4. **Result Analysis**: Parse outputs, identify failures, suggest fixes
 
-## Validation Suite Architecture
-
-### Test Organization
-```
-validation_scripts.py structure:
-├── TestRunner class
-
-├── Python validation methods (test_python_*)
-
-├── Result aggregation and reporting
-└── Environment-specific logic
-```
-
-### Test Method Patterns
-
-- **Python Tests**: pytest execution, coverage analysis
-
-- **Integration Tests**: Cross-component interaction validation
-- **Performance Tests**: Benchmarking and resource utilization
-
-### Result Processing
-- **Structured Logging**: JSONL results in logs/*.jsonl
-- **Sanitization**: Remove sensitive data via sanitize_jsonl.py
-- **Aggregation**: Summarize pass/fail/critical counts
-- **Reporting**: Generate human-readable summaries
-
-## Common Testing Scenarios
-
+## Common Patterns
 
 ### Python Code Validation
 ```
@@ -86,8 +57,21 @@ Focus: jinja2, pyyaml, click validation
 Expected: >80% test coverage, zero critical failures
 ```
 
+### Test Organization
+```
+validation_scripts.py structure:
+├── TestRunner class
+├── Python validation methods (test_python_*)
+├── Result aggregation and reporting
+└── Environment-specific logic
+```
 
-## Test Development Best Practices
+### Test Method Patterns
+- **Python Tests**: pytest execution, coverage analysis
+- **Integration Tests**: Cross-component interaction validation
+- **Performance Tests**: Benchmarking and resource utilization
+
+## Best Practices
 
 ### Test Design Principles
 - **Isolation**: Tests should not depend on each other
@@ -102,11 +86,15 @@ Expected: >80% test coverage, zero critical failures
 - **Logging**: Comprehensive logging for debugging
 
 ### Framework Integration
-
 - **Python**: pytest, pytest-cov
 
+## Validation and Testing
 
-## Result Analysis and Reporting
+### Result Processing
+- **Structured Logging**: JSONL results in logs/*.jsonl
+- **Sanitization**: Remove sensitive data via sanitize_jsonl.py
+- **Aggregation**: Summarize pass/fail/critical counts
+- **Reporting**: Generate human-readable summaries
 
 ### Failure Classification
 - **Critical**: Blocks deployment (red, must fix)
@@ -119,28 +107,16 @@ Expected: >80% test coverage, zero critical failures
 3. **Impact Assessment**: Determine scope of problems
 4. **Fix Coordination**: Escalate to appropriate agents
 
-### Reporting Standards
-- **Structured Format**: JSONL for machine processing
-- **Human Readable**: Clear summaries with recommendations
-- **Actionable**: Specific steps to resolve issues
-- **Traceable**: Link to relevant documentation and context
-
-## Integration with CI/CD
+## Deployment Orchestration
 
 ### Automated Testing
 ```bash
 # CI pipeline execution
-
 ./tools/test-runner.sh
 
-
 # Language-specific testing
-
 # Python tests
-
 uv run pytest
-
-
 ```
 
 ### Quality Gates
@@ -149,14 +125,75 @@ uv run pytest
 - **Performance**: Tests complete within time limits
 - **Coverage**: 80% minimum coverage
 
-## Escalation and Collaboration
+### Test Environment Management
+1. **Setup**: Automated environment provisioning
+2. **Isolation**: Test environments don't affect production
+3. **Cleanup**: Automatic resource cleanup after testing
+4. **Versioning**: Consistent tool and dependency versions
+
+## Monitoring and Alerting
+
+### Test Metrics Tracking
+```python
+# Test execution monitoring
+def monitor_test_execution():
+    test_results = load_test_results('logs/*.jsonl')
+
+    metrics = {
+        'total_tests': len(test_results),
+        'passed_tests': sum(1 for r in test_results if r['status'] == 'passed'),
+        'failed_tests': sum(1 for r in test_results if r['status'] == 'failed'),
+        'coverage_percentage': calculate_coverage(test_results),
+        'execution_time': sum(r['duration'] for r in test_results)
+    }
+
+    # Alert on critical failures
+    if metrics['failed_tests'] > 0:
+        alert_critical_failures(metrics)
+
+    return metrics
+```
+
+### CI/CD Integration
+- **Pipeline Status**: Real-time build and test status
+- **Failure Trends**: Track test failure patterns over time
+- **Performance Regression**: Detect slowing test execution
+- **Coverage Trends**: Monitor code coverage changes
+
+### Alert Configuration
+- **Test Failures**: Immediate alerts for critical test failures
+- **Coverage Drops**: Alerts when coverage falls below threshold
+- **Performance Issues**: Slow test execution or timeouts
+- **Environment Issues**: Test environment setup failures
+
+## Escalation and Handoff
+
+### Reporting Standards
+- **Structured Format**: JSONL for machine processing
+- **Human Readable**: Clear summaries with recommendations
+- **Actionable**: Specific steps to resolve issues
+- **Traceable**: Link to relevant documentation and context
 
 ### When to Escalate
 - **Code Issues**: Developer for implementation problems
 - **Infrastructure Issues**: DevOps Specialist for deployment problems
 - **Complex Failures**: Debugger for root cause analysis
+- **Performance Issues**: Systems Engineer for resource optimization
 
-### Collaboration Patterns
+### Coordination Patterns
 - **With Planner**: Test planning and coverage assessment
 - **With Debugger**: Failure analysis and fix validation
 - **With Deployer**: Pre-deployment validation coordination
+- **With Orchestrator**: Multi-agent testing coordination
+
+### Handoff Preparation
+- **Test Results**: Complete test execution reports and logs
+- **Failure Analysis**: Root cause analysis and impact assessment
+- **Fix Recommendations**: Specific suggestions for issue resolution
+- **Regression Tests**: New tests to prevent future occurrences
+
+## Success Metrics
+- **Test Coverage**: >80% code coverage across all components
+- **Failure Rate**: <5% test failure rate in stable branches
+- **Execution Time**: <30 minutes for full test suite
+- **False Positives**: <1% false positive test failures
