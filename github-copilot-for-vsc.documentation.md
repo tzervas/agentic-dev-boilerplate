@@ -315,3 +315,416 @@ Context files to reference:
 - https://github.blog/changelog/label/copilot (multiple 2025 entries about agents & instructions)
 - https://code.visualstudio.com/updates/v1.96#_github-copilot (Oct–Dec 2025 updates mentioning path-specific instructions)
 - https://github.com/github-copilot/copilot-documentation (community-curated examples of real-world .agent.md files)
+
+---
+
+**Direct Answer**
+
+As of late December 2025, **GitHub Copilot in VS Code does not offer native, built-in support for true multi-agent orchestration, chaining, looping, automated evaluation, or approval gating** within the product itself.
+
+Closest current capabilities (realistic maximum in production today):
+
+- **Single agent** specialisation via `.github/agents/*.agent.md` files (strong personas + tools + strict boundaries)
+- Manual chaining via explicit `@agent-name` handoffs in chat
+- Very limited automatic handoff (mostly ignored on github.com, partial in VS Code)
+- Looping/evaluation/approval gating → **must be implemented manually** through:
+  - Extremely disciplined prompt engineering
+  - Micro-task decomposition
+  - Explicit human approval phrases
+  - Draft PRs as gating mechanism
+
+There is currently **no official multi-agent framework**, no looping control structure, and no native approval workflow inside Copilot/Chat.
+
+The most production-viable pattern today remains **strongly bounded single agents + human-in-the-loop micro-tasks + GitOps PR review gates**.
+
+──────────────────────────────────────────
+
+**Detailed Analysis**
+
+### Current maximum realistic architecture for "automated multi-agent-like" workflows (Dec 2025)
+
+| Layer / Component                  | Native Support Level | Automation Depth | Safety / Gating Quality | Recommended Production Usage Pattern                                                                 |
+|------------------------------------|-----------------------|------------------|---------------------------|-------------------------------------------------------------------------------------------------------|
+| Single custom agent (.agent.md)    | ★★★★★                | High             | ★★★★☆                    | Core building block — define very narrow, ruthless personas with hard boundaries                      |
+| Manual agent ↔ agent handoff       | ★★☆☆☆                | Low              | ★★★★☆                    | `@agent1` tells `@agent2` to continue — very brittle, prompt-dependent                               |
+| Automatic handoff (limited)        | ★☆☆☆☆                | Very low         | ★★★☆☆                    | Mostly ignored outside of some IDE flows — do not rely on                                               |
+| Looping (while condition)          | ✗                    | —                | —                         | Emulate via repeated manual triggering + "continue until X" prompts — extremely fragile               |
+| Automated evaluation / scoring     | ✗                    | —                | —                         | Prompt agent to self-evaluate → output structured JSON → human reviews — no native enforcement       |
+| Approval gating before apply       | Manual only          | —                | ★★★★★                    | Strongest safety layer: require magic phrase "APPROVE-DEPLOY-XYZ123" before any apply/commit         |
+| GitOps final gate                  | ★★★★★                | N/A              | ★★★★★                    | Draft PR → human review → status check → merge — gold standard for infra/security code               |
+
+### Recommended production-grade pattern (security-first, zero-trust mindset) — 2025/2026 reality
+
+1. **Strict agent decomposition**
+   Create 4–7 extremely narrow agents with clear separation of concerns:
+
+   ```text
+   .github/agents/
+   ├── architect.agent.md           # high-level design, never touches code
+   ├── rust-crate-designer.agent.md # struct/enum/trait design only
+   ├── impl-agent.agent.md          # fills function bodies, zero architectural changes
+   ├── security-reviewer.agent.md   # pure red-team, zero write capability
+   ├── crd-validator.agent.md       # kube OpenAPI v3 + kubebuilder marker police
+   ├── test-writer.agent.md         # unit + integration tests only
+   └── docs-specialist.agent.md     # README + API docs only
+   ```
+
+2. **Mandatory safety layer in EVERY agent.md** (copy-paste this block)
+
+   ```markdown
+   # === NON-NEGOTIABLE SAFETY PROTOCOL — VIOLATION = IMMEDIATE TERMINATION ===
+   YOU MUST NEVER:
+   - Create commit, push, branch, or PR without the EXACT human phrase: "APPROVE-APPLY-[TASK-ID]"
+   - Execute any terminal command containing: rm, git push --force, kubectl apply --force, chmod +x
+   - Modify Cargo.toml, flake.nix, go.mod, Chart.yaml without human approval
+   - Suggest privileged: true, hostNetwork: true, runAsRoot, capabilities.ADD
+
+   When in doubt or when change complexity > 120 LOC or touches security boundary:
+   → Output ONLY:
+     ```json
+     {
+       "status": "handoff",
+       "reason": "Security / architectural review required",
+       "next_agent": "security-reviewer",
+       "proposed_change_summary": "..."
+     }
+     ```
+   ```
+
+3. **Workflow execution pattern** (manual orchestration — most reliable today)
+
+   ```
+   Human → @architect "Design new CRD for TzervasCertificate"
+   → architect outputs design document + handoff
+   → Human → @rust-crate-designer "Implement types from previous design"
+   → impl-agent outputs code diff preview
+   → Human reviews → types "APPROVE-APPLY-TZCRD-001"
+   → impl-agent applies diff
+   → @test-writer "Write tests"
+   → @security-reviewer "Audit everything"
+   → Human creates Draft PR from agent branch
+   → Team review → merge
+   ```
+
+4. **Best current approximation of "automation"**
+
+   - Use one very powerful "coordinator" agent that:
+     - Understands the full workflow
+     - Outputs numbered steps
+     - Suggests next @agent
+     - Waits for human "next" or "approve step N"
+   - Still requires human to copy-paste or @mention next agent
+
+### Future indicators (late 2025 – early 2026 chatter)
+
+Many teams are currently bridging the gap with external tools:
+
+- Continue.dev / Cursor.sh style (separate product)
+- Aider + custom multi-agent scripts
+- OpenHands / OpenDevin style local agents
+- GitHub Next / community experiments with MCP + external orchestration
+
+None of these are part of official GitHub Copilot for VS Code today.
+
+**Bottom line**
+In December 2025 the most secure, auditable, production-viable path for critical Kubernetes/Rust infrastructure remains:
+
+**Strong single agents + ruthless prompt boundaries + micro-task human gating + mandatory Draft PR review**
+
+Anything more autonomous introduces unacceptable risk in security-first environments.
+
+**Key Citations**
+- https://code.visualstudio.com/docs/copilot/customization/custom-agents
+- https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-custom-agents
+- https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/about-the-coding-agent
+- https://code.visualstudio.com/docs/copilot/chat/agents
+- https://github.blog/changelog/label/copilot (2025 entries about agent improvements)
+- https://code.visualstudio.com/docs/copilot/customization/custom-instructions
+- https://github.com/orgs/community/discussions/categories/copilot (multiple threads requesting multi-agent / workflow support — still open)
+- https://github.com/microsoft/vscode-copilot-release (release notes — no multi-agent framework as of v1.96–v1.98)
+
+---
+
+**Direct Answer**
+
+As of end of December 2025 there is **no native way** in GitHub Copilot for VS Code to create a fully automated, self-verifying, quality-gated dev cycle with built-in approval shims, automated testing/linting/validation gates, and intelligent RAG augmentation.
+
+The closest realistic production-grade approaches today require **external orchestration** layered on top of Copilot:
+
+1. **Most production-viable today (2025–early 2026)**: GitHub Actions + custom Rust/Python controller + very strict Copilot agent personas + Draft PR gating
+2. **Emerging strong pattern**: Aider / Continue.dev / Cursor-like external agent orchestrator talking to Copilot via MCP or chat API
+3. **RAG augmentation**: Either via custom MCP server (most clean), or by stuffing relevant docs/CRDs/examples into `.github/copilot-instructions.md` + path-specific instructions files (simplest but limited)
+
+True closed-loop automation with quality + test + spec verification gates **requires leaving the pure Copilot/VS Code surface** and building a thin GitOps controller around it.
+
+──────────────────────────────────────────
+
+**Detailed Analysis**
+
+### Reality Check – What Copilot/VS Code Can & Cannot Do Natively (Dec 2025)
+
+| Requirement                                      | Native Copilot/VS Code Support | Realistic Quality Level | Best Current Workaround Strategy                                                                 |
+|--------------------------------------------------|--------------------------------|---------------------------|---------------------------------------------------------------------------------------------------|
+| Autonomous code → test → lint → validate loop    | ✗                              | —                         | External GitHub Action / custom operator                                                              |
+| Automated approval gate on quality metrics       | ✗                              | —                         | Status checks on Draft PR (super-linter, cargo test, kubeconform, etc.)                              |
+| Spec/requirements semantic verification          | Very weak                      | ★☆☆☆☆                    | Prompt agent to self-evaluate → output structured JSON → human/CI review                             |
+| RAG over internal codebase/docs/CRDs             | Very limited (codebase search) | ★★☆☆☆                    | Custom MCP server exposing vector store or simple keyword search over docs                           |
+| Gating behind "code actually works"              | ✗                              | —                         | Mandatory CI on branch/PR + Draft PR requirement + human final gate                                 |
+
+### Recommended Production Architecture (Security-first, GitOps-maximal)
+
+**Layered system** — strict separation of concerns
+
+```
+Human Task Spec
+      ↓ (Issue / Markdown spec in repo)
+Copilot Coding Agent (@architect + @impl + @test-writer + @security-reviewer)
+      ↓ (very strict personas + magic approval phrases)
+Creates branch agent/task-XYZ-123
+      ↓
+Pushes preview commits (no --force)
+      ↓
+Creates Draft PR with [DRAFT] prefix + checklist in body
+      ↓
+CI/CD pipeline runs on every push to agent/* branches
+   • super-linter / clippy pedantic
+   • cargo test --all-features --no-fail-fast
+   • kubeconform / kube-score on generated manifests
+   • custom Rust verifier (optional: spectral-like rules engine)
+      ↓
+All checks green → PR status turns green
+      ↓
+Human reviews diff + test output + security agent comments
+      ↓ (explicit approval)
+Removes [DRAFT] → marks PR ready for review
+      ↓
+Required reviewers approve → merge to main
+```
+
+### RAG Augmentation Options – Ranked by Cleanliness & Security
+
+| Approach                               | Implementation Effort | Security / Auditability | Freshness / Relevance | Recommended When                              |
+|----------------------------------------|------------------------|---------------------------|------------------------|-----------------------------------------------|
+| 1. Custom MCP Server (best long-term)  | High (Rust/Go)         | ★★★★★                    | ★★★★★                 | You already run self-hosted infra             |
+| 2. Vector store + simple API endpoint  | Medium–High            | ★★★★☆                    | ★★★★☆                 | Need semantic search over internal docs       |
+| 3. Stuff into .github/instructions/*   | Low                    | ★★★☆☆                    | ★★☆☆☆                 | Quick win, < 10–15k tokens total context      |
+| 4. #file: + #codebase heavy prompting  | Very low               | ★★★☆☆                    | ★★★☆☆                 | Small/medium repo, no sensitive data          |
+| 5. External RAG (Continue.dev style)   | Medium                 | ★★★★☆                    | ★★★★☆                 | Already evaluating external agent frameworks  |
+
+**MCP Server – Recommended Reference Architecture** (Rust-heavy)
+
+```yaml
+# mcp-rag-server values.yaml (kube-rs style)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copilot-mcp-rag
+spec:
+  template:
+    spec:
+      containers:
+      - name: rag-server
+        image: ghcr.io/your-org/mcp-rag-server:v0.3.0
+        env:
+        - name: RUST_LOG
+          value: "info,mcp_rag=debug"
+        - name: VECTOR_DB_URL
+          value: "http://qdrant-headless:6333"   # or weaviate, chroma, pgvector
+        volumeMounts:
+        - name: docs-volume
+          mountPath: /docs
+      volumes:
+      - name: docs-volume
+        persistentVolumeClaim:
+          claimName: internal-docs-pvc   # git-sync sidecar or operator managed
+```
+
+Copilot agent prompt snippet:
+
+```markdown
+When you need up-to-date information about our CRDs, architecture decisions, or security policies:
+→ Use #tool:rag-search with queries like:
+  "TzervasCertificate CRD schema v1alpha1"
+  "zero-trust network policy requirements for ingress"
+  "allowed rust crate versions 2025 Q4"
+```
+
+### Threat Model Highlights
+
+- Agent jailbreak → prompt injection → bad code generation
+  → Mitigation: strict NEVER rules + handoff on uncertainty + human final gate
+- RAG poisoning → stale/malicious docs
+  → Mitigation: git-tracked docs + signed commits + minimal RAG surface
+- Infinite generation / runaway costs
+  → Mitigation: hard task size limits in prompt + CI timeout + budget alerts
+
+**Current 2025–2026 Verdict**
+Full closed-loop automation with strong quality & spec gates is **not achievable purely inside Copilot/VS Code**.
+The least bad realistic path is:
+
+**Very constrained Copilot agents**
++ **GitHub Actions CI on agent branches**
++ **Mandatory Draft PR workflow**
++ **Custom MCP-based RAG** for context augmentation
++ **Human as final approver** after all lights are green
+
+Anything promising more autonomy today is either external tooling (Aider, Continue, OpenHands) or future GitHub feature (mid-2026+ at best).
+
+**Key Citations**
+- https://code.visualstudio.com/docs/copilot/customization/custom-agents
+- https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/about-the-coding-agent#autonomous-mode
+- https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-api-to-manage-projects
+- https://github.blog/changelog/label/copilot (late 2025 entries on agent & MCP improvements)
+- https://code.visualstudio.com/docs/copilot/chat/mcp-servers
+- https://github.com/features/copilot (enterprise docs mentioning custom tooling integration)
+- https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-supply-chain-security (context for gating)
+
+---
+
+**Direct Answer**
+
+The **optimal and most reliable** way in December 2025 to set and enforce hard guardrails for GitHub Copilot in VS Code is:
+
+- **Primary mechanism** — extremely strict, non-negotiable safety rules written in **plain language** in `.github/copilot-instructions.md` (global) + specialized `.github/instructions/**/*.instructions.md` files
+- **Secondary reinforcement** — identical or even stronger rules duplicated in **every single** `.github/agents/*.agent.md` file (top of body, before any other instructions)
+- **Tertiary enforcement** — repository-level **branch protection rules** + **required status checks** + **code owners** (GitHub platform level — the only part that actually prevents bad actions)
+
+Copilot **cannot be trusted** to perfectly follow even very strongly worded instructions — it remains a statistical model.
+**Hard enforcement must live outside of Copilot** (GitHub branch protection + CI/CD gates).
+
+Critical URLs:
+https://code.visualstudio.com/docs/copilot/customization/custom-instructions
+https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches
+
+──────────────────────────────────────────
+
+**Detailed Analysis**
+
+### Hierarchy of Enforcement Strength (Dec 2025 reality)
+
+| Layer                              | Enforcement Strength | Reliability | Customizability | Auditability | Recommended Usage                                                                 |
+|------------------------------------|-----------------------|-------------|------------------|--------------|-----------------------------------------------------------------------------------|
+| GitHub Branch Protection Rules     | ★★★★★                | Hard        | ★★★★☆           | ★★★★★       | Must-have: never allow direct push to main/dev                                    |
+| Required Status Checks (CI)        | ★★★★☆                | Hard        | ★★★★★           | ★★★★★       | Enforce lint, test, security scan before merge                                    |
+| CODEOWNERS file                    | ★★★★☆                | Hard        | ★★★★☆           | ★★★★★       | Force human review on critical paths                                              |
+| `.github/copilot-instructions.md`  | ★★★☆☆                | Soft        | ★★★★★           | ★★★★☆       | Global rules — highest priority among Copilot files                              |
+| Path-specific `.instructions/*.md` | ★★☆☆☆                | Soft        | ★★★★★           | ★★★★☆       | Context-specific rules (e.g. python/ → uv rules)                                  |
+| Individual `.agent.md` safety block| ★★☆☆☆                | Soft        | ★★★★★           | ★★★★☆       | Redundant reinforcement — put same rules in EVERY agent                           |
+| Prompt phrases / magic words       | ★☆☆☆☆                | Very soft   | ★★★★★           | ★★☆☆☆       | Last line of defense — never rely on alone                                        |
+
+### Recommended Implementation (2025 best practice – security-first)
+
+1. **Platform-level hard controls** (non-negotiable)
+
+```yaml
+# Repository → Settings → Branches → Branch protection rules
+
+Branch name pattern: main
+- Require a pull request before merging
+- Require approvals: 2
+- Dismiss stale approvals when new commits are pushed
+- Require status checks to pass:
+  • lint
+  • test
+  • security-scan
+  • conventional-commits
+- Restrict who can push: only maintainers after checks
+
+Branch name pattern: dev
+→ Same rules as main (protect dev as trunk)
+```
+
+2. **Global Copilot instructions** — `.github/copilot-instructions.md`
+
+```markdown
+# NON-NEGOTIABLE GLOBAL SAFETY & WORKFLOW RULES
+These rules are absolute. Violation = immediate handoff to human.
+
+GIT WORKFLOW RULES – NEVER BREAK THESE:
+1. NEVER commit directly to main or dev
+2. ALWAYS create new branch from dev: agent/task-XYZ-123-description
+3. NEVER delete, rename, force-push, or modify history of main or dev
+4. ALWAYS create Draft PR from agent branch → dev
+5. Merge flow: agent-branch → dev → (after review & CI green) dev → main
+6. NEVER suggest or execute git push --force
+
+PYTHON ECOSYSTEM RULES:
+- ALWAYS use uv (uv python, uv venv, uv pip install, uv pip compile, uv lock) for ALL Python work
+- NEVER use pip, pipx, poetry, conda, virtualenv, pipenv unless explicitly overriding for legacy compatibility
+- When suggesting Python code: start every snippet with comment "# Managed by uv – do not use pip"
+
+When any of these rules are at risk or unclear:
+→ Output ONLY this JSON and nothing else:
+```json
+{
+  "status": "safety_halt",
+  "reason": "Violation of global workflow rule: [exact rule]",
+  "suggested_action": "human review required"
+}
+```
+```
+
+3. **Redundant reinforcement in every `.agent.md`** (top of file)
+
+```yaml
+---
+name: impl-agent
+description: Safe code implementer
+tools: [edit_file]   # only if absolutely necessary – prefer preview
+---
+# === CRITICAL SAFETY BLOCK – MUST BE FIRST ===
+[copy-paste exact same NON-NEGOTIABLE rules from global instructions here]
+
+You are ONLY allowed to:
+- Propose code changes as diff previews
+- Create new branches following pattern agent/task-*
+- Create Draft PRs
+
+You are STRICTLY FORBIDDEN from:
+- Any git operation except branch creation + PR creation (Draft)
+- Any use of pip/pipenv/poetry/conda
+...
+```
+
+4. **Path-specific Python reinforcement** (example)
+
+`.github/instructions/python/**/*.instructions.md`
+
+```markdown
+# Python-context override
+
+When working in any Python file or python/ directory:
+- MUST use uv toolchain exclusively
+- First line of every .py file you create/modify: "# Managed via uv – toolchain: uv>=0.4"
+- Never suggest requirements.txt – always use uv lock / uv pip compile
+```
+
+### Threat Model & Residual Risks
+
+- **Model ignores strong instructions** (~5–20% chance depending on task complexity)
+  → Mitigated by: branch protection + required reviews
+- **Agent creates bad branch name or pushes directly**
+  → Mitigated by: protected branches + no direct push permission
+- **Rules become outdated**
+  → Mitigated by: git-tracked instructions + PR review of instruction files
+
+### Summary – Optimal Balance (Dec 2025)
+
+**Hard** enforcement:
+→ GitHub branch protection + required status checks + CODEOWNERS
+
+**Strong soft guidance** (Copilot obedience layer):
+→ `.github/copilot-instructions.md` (single source of truth)
+→ Identical rules copy-pasted into every `.agent.md`
+→ Path-specific overrides where needed
+
+**Never rely** solely on prompt engineering for critical workflow invariants in production-grade infrastructure work.
+
+**Key Citations**
+- https://code.visualstudio.com/docs/copilot/customization/custom-instructions
+- https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches
+- https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-a-branch-protection-rule
+- https://docs.github.com/en/code-security/supply-chain-security/about-supply-chain-security
+- https://code.visualstudio.com/docs/copilot/customization/custom-agents#defining-boundaries-and-handoffs
+- https://github.blog/changelog/label/copilot (multiple 2025 posts about instruction reliability improvements – still soft enforcement)
+- https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/approving-a-pull-request-with-required-reviews
