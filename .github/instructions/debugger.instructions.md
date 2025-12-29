@@ -28,7 +28,7 @@ applyTo: 'logs/*.jsonl,scripts/sanitize_jsonl.py,logs/debug/*.log,scripts/collec
 **Use**: [Code Validation](.github/prompts/code-validation.md) + [File Operations](.github/prompts/file-operations.md)
 **Rationale**: Develop, test, and validate patches safely
 
-## Diagnostic Methodology
+## Domain Workflows
 
 ### Systematic Investigation
 1. **Symptom Identification**: What is failing and how
@@ -51,8 +51,7 @@ applyTo: 'logs/*.jsonl,scripts/sanitize_jsonl.py,logs/debug/*.log,scripts/collec
 - **Code Analysis**: Static analysis tools and linters
 - **Reproduction**: Minimal test cases for issue isolation
 
-## Common Failure Patterns
-
+## Common Patterns
 
 ### Python Runtime Errors
 ```
@@ -69,7 +68,6 @@ Common Causes:
 - Type mismatches and runtime exceptions
 - Resource exhaustion (memory, file handles)
 ```
-
 
 ### Configuration Issues
 ```
@@ -103,7 +101,7 @@ Common Causes:
 - Authentication failures
 ```
 
-## Patch Development Workflow
+## Best Practices
 
 ### Fix Design Principles
 - **Targeted**: Address root cause, not symptoms
@@ -124,9 +122,9 @@ Common Causes:
 - **Dependencies**: Fix import statements and requirements
 - **Logic Fixes**: Correct algorithmic errors and edge cases
 
-## Log Enrichment and Sanitization
+## Validation and Testing
 
-### Log Processing
+### Log Enrichment and Sanitization
 ```bash
 # Sanitize sensitive data
 python scripts/sanitize_jsonl.py logs/debug.jsonl
@@ -144,12 +142,8 @@ jq 'select(.level == "error")' logs/debug.jsonl
 python scripts/collect_debug_info.py
 
 # System diagnostics
-
-
 python -c "import sys; print(sys.version)"
 uv pip list --format=freeze
-
-
 
 # Environment info
 env | grep -E "(PYTHON)"
@@ -161,7 +155,42 @@ env | grep -E "(PYTHON)"
 - **Timeline**: Reconstruct sequence of events
 - **Impact Assessment**: Determine scope of problems
 
-## Collaboration and Escalation
+## Deployment Orchestration
+
+### Patch Deployment
+1. **Validation**: Test fixes in isolated environment
+2. **Staging**: Deploy to staging for integration testing
+3. **Gradual Rollout**: Apply fixes incrementally
+4. **Monitoring**: Watch for new issues post-deployment
+5. **Rollback**: Quick revert if problems detected
+
+### Automated Testing
+1. **Unit Tests**: Validate individual components
+2. **Integration Tests**: Test component interactions
+3. **Regression Tests**: Ensure no existing functionality broken
+4. **Performance Tests**: Check for performance impacts
+
+## Monitoring and Alerting
+
+### Issue Tracking
+- **Error Rates**: Monitor for increasing failure patterns
+- **Resolution Time**: Track time to diagnose and fix issues
+- **Recurrence**: Alert on repeated issues
+- **Impact**: Monitor scope and severity of problems
+
+### Diagnostic Monitoring
+```bash
+# Log monitoring
+tail -f logs/debug/*.log
+
+# Error aggregation
+python scripts/analyze_logs.py
+
+# Performance tracking
+python scripts/monitor_performance.py
+```
+
+## Escalation and Handoff
 
 ### Information Sharing
 - **Clear Documentation**: Detailed issue descriptions
@@ -174,6 +203,12 @@ env | grep -E "(PYTHON)"
 - **Infrastructure Issues**: Need DevOps expertise
 - **Design Issues**: Planner for architectural changes
 - **Testing Gaps**: Tester for validation improvements
+
+### Coordination Patterns
+- **With Tester**: Validation suite development and execution
+- **With DevOps Specialist**: Infrastructure and deployment fixes
+- **With Systems Engineer**: Hardware and system-level issues
+- **With Planner**: Architectural problem analysis
 
 ### Handoff Preparation
 - **Complete Context**: All relevant logs and reproduction steps
