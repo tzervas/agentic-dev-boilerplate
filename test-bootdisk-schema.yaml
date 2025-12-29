@@ -107,7 +107,6 @@ agents_enabled: ["swe", "test_engineer", "project_manager", "qa_evaluator", "com
 agent_roles: ["swe", "test_engineer", "project_manager", "qa_evaluator", "communicator", "devops", "security", "documentation"]
 
 workflows_enabled: ["ci_cd", "pr_automation", "agent_coordination"]
-quality_gates: ["linting", "testing", "security"]
 
 doc_formats: ["markdown", "html"]
 auto_doc_generation: true
