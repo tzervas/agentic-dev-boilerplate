@@ -15,11 +15,6 @@ import click
 import yaml
 from jinja2 import Environment, FileSystemLoader
 
-try:
-    from chngbrgr import ChangelogGenerator
-except ImportError:
-    ChangelogGenerator = None
-
 
 class BoilerplateGenerator:
     def __init__(
@@ -89,51 +84,91 @@ class BoilerplateGenerator:
         """Generate agent instruction files."""
         click.echo("🤖 Generating agent instructions...")
 
-        # Define template mappings based on template type
-        if self.template_type == "bootdisk-agentic-structure":
-            agent_templates = {
-                "swe": "agent_swe_instructions.md.j2",
-                "test_engineer": "agent_test_engineer_instructions.md.j2",
-            }
-        else:
-            agent_templates = {
-                "planner": "agent_planner_instructions.md.j2",
-                "tester": "agent_tester_instructions.md.j2",
-                "debugger": "agent_debugger_instructions.md.j2",
-                "deployer": "agent_deployer_instructions.md.j2",
-                "systems-engineer": "agent_systems_engineer_instructions.md.j2",
-                "devops-specialist": "agent_devops_specialist_instructions.md.j2",
-                "orchestrator": "agent_orchestrator_instructions.md.j2",
-                "software-engineer": "agent_software_engineer_instructions.md.j2",
-                "ai-engineer": "agent_ai_engineer_instructions.md.j2",
-                "security": "agent_security_instructions.md.j2",
-                "api-developer": "agent_api_developer_instructions.md.j2",
-                "project-manager": "agent_project_manager_instructions.md.j2",
-                "frontend-developer": "frontend-developer.agent.md",
-                "backend-developer": "backend-developer.agent.md",
-                "fullstack-developer": "fullstack-developer.agent.md",
-                "mobile-developer": "mobile-developer.agent.md",
-                "data-scientist": "data-scientist.agent.md",
-                "ml-engineer": "ml-engineer.agent.md",
-            }
+        # Define agent file mappings
+        agent_files = {
+            "planner": "planner.agent.md",
+            "tester": "tester.agent.md",
+            "debugger": "debugger.agent.md",
+            "deployer": "deployer.agent.md",
+            "systems-engineer": "systems-engineer.agent.md",
+            "devops-specialist": "devops-specialist.agent.md",
+            "orchestrator": "orchestrator.agent.md",
+            "software-engineer": "software-engineer.agent.md",
+            "ai-engineer": "ai-engineer.agent.md",
+            "security": "security.agent.md",
+            "api-developer": "api-developer.agent.md",
+            "project-manager": "project-manager.agent.md",
+            "frontend-developer": "frontend-developer.agent.md",
+            "backend-developer": "backend-developer.agent.md",
+            "fullstack-developer": "fullstack-developer.agent.md",
+            "mobile-developer": "mobile-developer.agent.md",
+            "data-scientist": "data-scientist.agent.md",
+            "ml-engineer": "ml-engineer.agent.md",
+        }
 
         for agent in self.schema.get("agents", []):
             if not agent.get("enabled", True):
                 continue
 
             role = agent["role"]
-            if role in agent_templates:
-                template = self.jinja_env.get_template(agent_templates[role])
-                content = template.render(schema=self.schema, agent=agent)
-
-                output_path = (
-                    self.output_dir
+            if role in agent_files:
+                # Copy agent file from .github/agents/ directory
+                source_path = (
+                    Path(__file__).parent.parent.parent
                     / ".github"
-                    / "instructions"
-                    / f"{role}.instructions.md"
+                    / "agents"
+                    / agent_files[role]
                 )
-                with open(output_path, "w") as f:
-                    f.write(content)
+                if source_path.exists():
+                    content = source_path.read_text()
+
+                    # Replace template variables in the content
+                    project_name = (
+                        self.schema["project"]["name"]
+                        if isinstance(self.schema["project"], dict)
+                        else self.schema["project"]
+                    )
+                    project_desc = (
+                        self.schema["project"]["description"]
+                        if isinstance(self.schema["project"], dict)
+                        else "Test project"
+                    )
+
+                    content = content.replace("{{ schema.project.name }}", project_name)
+                    content = content.replace(
+                        "{{ schema.project.description }}", project_desc
+                    )
+
+                    # Handle complex expressions
+                    import re
+
+                    def replace_complex_expr(match):
+                        expr = match.group(1)
+                        try:
+                            # Simple evaluation of ' '.join(schema.project.description.split()[:3])
+                            if (
+                                "' '.join(schema.project.description.split()[:3])"
+                                in expr
+                            ):
+                                desc = project_desc
+                                desc_words = desc.split()[:3]
+                                return " ".join(desc_words)
+                        except:
+                            pass
+                        return match.group(0)  # Return original if can't evaluate
+
+                    content = re.sub(
+                        r"\{\{\s*(.*?)\s*\}\}", replace_complex_expr, content
+                    )
+
+                    output_path = (
+                        self.output_dir
+                        / ".github"
+                        / "instructions"
+                        / f"{role}.instructions.md"
+                    )
+                    output_path.parent.mkdir(parents=True, exist_ok=True)
+                    output_path.write_text(content)
 
     def generate_prompts(self):
         """Generate reusable prompt templates."""
@@ -468,16 +503,8 @@ echo "✅ Commit is properly signed"
                 )
 
         if docs_config.get("changelog"):
-            if ChangelogGenerator:
-                generator = ChangelogGenerator(self.schema["project"]["name"])
-                changelog_content = generator.generate_initial_changelog(
-                    self.schema["project"].get("repository")
-                )
-                output_path = self.output_dir / "CHANGELOG.md"
-                generator.write_changelog(changelog_content, output_path)
-            else:
-                # Fallback to inline generation if chngbrgr not available
-                changelog_content = f"""# Changelog
+            # Generate initial changelog
+            changelog_content = f"""# Changelog
 
 All notable changes to {self.schema['project']['name']} will be documented in this file.
 
@@ -509,9 +536,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - N/A
 """
 
-                output_path = self.output_dir / "CHANGELOG.md"
-                with open(output_path, "w") as f:
-                    f.write(changelog_content)
+            output_path = self.output_dir / "CHANGELOG.md"
+            output_path.write_text(changelog_content)
 
 
 @click.command()

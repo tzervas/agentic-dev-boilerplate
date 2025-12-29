@@ -154,27 +154,33 @@ def test_agent_instruction_generation(
 
     generator = BoilerplateGenerator(str(test_schema), str(output_dir))
 
+    # Mock Path.exists and Path.read_text for the agent files
     with (
-        patch.object(generator, "jinja_env") as mock_env,
-        patch("builtins.open", mock_open()) as mock_file,
+        patch("pathlib.Path.exists", return_value=True) as mock_exists,
+        patch(
+            "pathlib.Path.read_text",
+            return_value=f"Instructions for {agent_config['role']}",
+        ) as mock_read,
+        patch("pathlib.Path.mkdir") as mock_mkdir,
+        patch("pathlib.Path.write_text") as mock_write,
     ):
-        mock_template = mock_env.get_template.return_value
-        mock_template.render.return_value = f"Instructions for {agent_config['role']}"
-
         generator.generate_agent_instructions()
 
         if expected_enabled:
-            # Check that get_template was called with the right template
-            mock_env.get_template.assert_called_with(
-                f"agent_{agent_config['role']}_instructions.md.j2"
+            # Check that the agent file was read
+            expected_path = (
+                Path(__file__).parent.parent
+                / ".github"
+                / "agents"
+                / f"{agent_config['role']}.agent.md"
             )
-            # Check that render was called
-            mock_template.render.assert_called()
-            # Check that file was opened for writing
-            mock_file.assert_called()
+            mock_read.assert_called_with()
+            # Check that the output file was written
+            mock_write.assert_called_with(f"Instructions for {agent_config['role']}")
         else:
-            # Should not call get_template for disabled agents
-            mock_env.get_template.assert_not_called()
+            # Should not read or write for disabled agents
+            mock_read.assert_not_called()
+            mock_write.assert_not_called()
 
 
 def test_end_to_end_generation(sample_schema, output_dir):
