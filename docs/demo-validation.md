@@ -240,8 +240,6 @@ applyTo: 'src/**/*.py,models/**,data/**,notebooks/**,src/**/*.ipynb'
 ### CLI Usage
 ```bash
 # Install the package
-pip install agentic-dev-boilerplate
-# OR
 uv pip install agentic-dev-boilerplate
 
 # Generate boilerplate

@@ -29,9 +29,9 @@ applyTo: 'scripts/agent_orchestrator.py,scripts/multi_agent_solver.py,.github/wo
 **Use**: [Task Tracking](.github/prompts/task-tracking.md) + [Agent Coordination](.github/prompts/agent-coordination.md)
 **Rationale**: Break complex problems into manageable, specialized tasks
 
-## Multi-Agent Communication Protocol
+## Domain Workflows
 
-### Message Types
+### Multi-Agent Communication Protocol
 - **Task Assignment**: Delegate specific work to specialized agents
 - **Status Updates**: Share progress and findings with the team
 - **Validation Requests**: Ask other agents to validate work
@@ -44,99 +44,53 @@ applyTo: 'scripts/agent_orchestrator.py,scripts/multi_agent_solver.py,.github/wo
 - **Status Updates**: Real-time progress sharing via task tracking
 - **Validation Results**: Cross-agent validation outcomes
 
-## Collaborative Problem-Solving Workflow
+### Collaborative Problem-Solving Workflow
+1. **Problem Analysis**: Understand scope, select agents, decompose tasks
+2. **Parallel Execution**: Independent work with progress monitoring
+3. **Integration and Validation**: Solution synthesis and cross-agent validation
+4. **Implementation and Handoff**: Coordinated deployment and documentation
 
-### Phase 1: Problem Analysis
-1. **Initial Assessment**: Understand the problem scope and requirements
-2. **Agent Selection**: Identify which agents have relevant expertise
-3. **Task Decomposition**: Break problem into agent-specific subtasks
-4. **Context Sharing**: Distribute relevant information to all agents
+## Common Patterns
 
-### Phase 2: Parallel Execution
-1. **Independent Work**: Agents work on their assigned tasks simultaneously
-2. **Progress Monitoring**: Track status across all agents
-3. **Inter-Agent Communication**: Share findings and coordinate approaches
-4. **Early Validation**: Quick checks to ensure alignment
-
-### Phase 3: Integration and Validation
-1. **Solution Synthesis**: Combine individual agent contributions
-2. **Cross-Agent Validation**: Each agent validates others' work
-3. **Consensus Building**: Reach agreement on final solution
-4. **Quality Assurance**: Comprehensive testing and validation
-
-### Phase 4: Implementation and Handoff
-1. **Coordinated Deployment**: Team-based implementation
-2. **Final Validation**: Complete system validation
-3. **Documentation**: Record the collaborative process
-4. **Knowledge Transfer**: Share learnings for future coordination
-
-## Agent Team Composition
-
-### Core Team Members
-- **Planner**: Task decomposition and roadmap creation
-- **Systems Engineer**: Infrastructure and hardware considerations
-- **DevOps Specialist**: Deployment and automation
-- **Tester**: Quality assurance and validation
-- **Debugger**: Issue diagnosis and fixes
-- **Deployer**: Production implementation
-
-### Specialized Roles
-- **Security Auditor**: Security validation and compliance
-- **Performance Analyst**: Performance optimization
-- **Documentation Specialist**: Technical writing and maintenance
-- **Code Reviewer**: Code quality and standards
-- **Architect**: System design and architecture decisions
-
-## Coordination Strategies
-
-### Synchronous Collaboration
+### Agent Team Composition
 ```
-Context: Time-sensitive issues requiring immediate coordination
-Process:
-1. Quick agent assessment and task assignment
-2. Parallel investigation with real-time updates
-3. Rapid consensus building
-4. Coordinated immediate action
+Core Team Members:
+- Planner: Task decomposition and roadmap creation
+- Systems Engineer: Infrastructure and hardware considerations
+- DevOps Specialist: Deployment and automation
+- Tester: Quality assurance and validation
+- Debugger: Issue diagnosis and fixes
+- Deployer: Production implementation
+
+Specialized Roles:
+- Security Auditor: Security validation and compliance
+- Performance Analyst: Performance optimization
+- Documentation Specialist: Technical writing and maintenance
+- Code Reviewer: Code quality and standards
+- Architect: System design and architecture decisions
 ```
 
-### Asynchronous Collaboration
+### Coordination Strategies
 ```
-Context: Complex problems requiring deep analysis
-Process:
-1. Comprehensive task breakdown and assignment
-2. Independent deep-dive analysis
-3. Progressive information sharing
-4. Iterative solution refinement
-```
+Synchronous Collaboration:
+- Time-sensitive issues requiring immediate coordination
+- Quick agent assessment and parallel investigation
+- Rapid consensus building and coordinated action
 
-### Escalation-Based Collaboration
-```
-Context: Problems exceeding individual agent capabilities
-Process:
-1. Initial agent attempts solo solution
-2. Recognition of need for additional expertise
-3. Escalation to appropriate specialized agents
-4. Coordinated multi-agent resolution
+Asynchronous Collaboration:
+- Complex problems requiring deep analysis
+- Comprehensive task breakdown and independent work
+- Progressive information sharing and iterative refinement
+
+Escalation-Based Collaboration:
+- Problems exceeding individual agent capabilities
+- Initial solo attempts followed by multi-agent resolution
+- Coordinated resolution with additional expertise
 ```
 
-## Quality Assurance Mechanisms
+## Best Practices
 
-### Cross-Agent Validation
-- **Code Review**: Multiple agents review code changes
-- **Testing**: Comprehensive testing across different perspectives
-- **Security**: Security validation by dedicated security agents
-- **Performance**: Performance validation by performance specialists
-- **Documentation**: Documentation review by documentation experts
-
-### Consensus Protocols
-- **Majority Voting**: Simple majority for straightforward decisions
-- **Expert Authority**: Domain experts have final say in their areas
-- **Collaborative Consensus**: Discussion and agreement on complex issues
-- **Escalation to Human**: Human intervention for critical or controversial decisions
-
-## Communication Best Practices
-
-### Clear Communication
+### Communication Best Practices
 - **Structured Messages**: Use consistent formats for agent communication
 - **Context Preservation**: Maintain context across agent handoffs
 - **Progress Transparency**: Clear visibility into each agent's work
@@ -147,6 +101,114 @@ Process:
 - **Parallel Processing**: Maximize concurrent agent work
 - **Early Integration**: Regular integration points to catch issues early
 - **Resource Optimization**: Balance agent workload and expertise utilization
+
+### Quality Assurance Mechanisms
+- **Cross-Agent Validation**: Multiple agents review code changes
+- **Testing**: Comprehensive testing across different perspectives
+- **Security**: Security validation by dedicated security agents
+- **Performance**: Performance validation by performance specialists
+- **Documentation**: Documentation review by documentation experts
+
+## Validation and Testing
+
+### Consensus Protocols
+- **Majority Voting**: Simple majority for straightforward decisions
+- **Expert Authority**: Domain experts have final say in their areas
+- **Collaborative Consensus**: Discussion and agreement on complex issues
+- **Escalation to Human**: Human intervention for critical or controversial decisions
+
+### Cross-Agent Validation
+```python
+# Multi-agent validation example
+def validate_solution(solution, agent_experts):
+    validations = []
+    for agent in agent_experts:
+        validation_result = agent.validate(solution)
+        validations.append(validation_result)
+
+    # Consensus checking
+    positive_validations = sum(1 for v in validations if v['approved'])
+    consensus_threshold = len(agent_experts) * 0.7  # 70% agreement
+
+    return positive_validations >= consensus_threshold
+```
+
+### Quality Metrics Tracking
+- **Validation Coverage**: Percentage of solution validated by multiple agents
+- **Error Detection**: Issues caught through cross-agent validation
+- **Solution Robustness**: Solutions that withstand multi-perspective review
+- **Knowledge Sharing**: Effective transfer of insights between agents
+
+## Deployment Orchestration
+
+### Multi-Agent Deployment
+1. **Task Sequencing**: Order agent tasks based on dependencies
+2. **Resource Allocation**: Assign appropriate resources to each agent
+3. **Progress Monitoring**: Track completion status across all agents
+4. **Integration Points**: Synchronize work at key milestones
+
+### Coordination Automation
+1. **Workflow Definition**: Define multi-agent workflows and dependencies
+2. **Automated Assignment**: Automatically assign tasks to appropriate agents
+3. **Status Tracking**: Real-time monitoring of agent progress
+4. **Result Aggregation**: Combine outputs from multiple agents
+
+### Rollback and Recovery
+1. **State Preservation**: Save agent states for potential rollback
+2. **Failure Detection**: Identify when coordination fails
+3. **Recovery Procedures**: Restore to previous coordination state
+4. **Alternative Strategies**: Switch to different coordination approaches
+
+## Monitoring and Alerting
+
+### Coordination Monitoring
+```python
+# Agent coordination metrics
+from prometheus_client import Counter, Gauge, Histogram
+
+AGENT_TASKS_ASSIGNED = Counter('agent_tasks_assigned_total', 'Total tasks assigned to agents', ['agent_type'])
+COORDINATION_TIME = Histogram('coordination_duration_seconds', 'Time spent coordinating agents')
+AGENT_UTILIZATION = Gauge('agent_utilization_ratio', 'Agent utilization ratio', ['agent_type'])
+VALIDATION_SUCCESS_RATE = Gauge('validation_success_rate', 'Cross-agent validation success rate')
+```
+
+### Performance Tracking
+- **Task Completion**: Time to complete individual and coordinated tasks
+- **Agent Utilization**: Effective use of specialized agent capabilities
+- **Communication Efficiency**: Quality and quantity of inter-agent communication
+- **Error Rates**: Coordination failures and resolution times
+
+### Alert Configuration
+- **Coordination Failures**: Multi-agent tasks failing to complete
+- **Communication Issues**: Breakdowns in agent communication
+- **Resource Conflicts**: Agents competing for shared resources
+- **Quality Degradation**: Declining validation success rates
+
+## Escalation and Handoff
+
+### When to Escalate
+- **Technical Complexity**: Problems requiring multiple specialized domains
+- **High Risk**: Solutions with significant potential impact
+- **Time Pressure**: Urgent issues requiring rapid multi-agent response
+- **Quality Requirements**: Solutions needing extensive validation
+
+### Resolution Strategies
+- **Expert Consultation**: Bring in additional specialized agents
+- **Team Expansion**: Increase team size for complex problems
+- **Process Adaptation**: Modify coordination approach based on problem type
+- **Human Oversight**: Escalate to human supervisors for critical decisions
+
+### Coordination Patterns
+- **With Planner**: Task decomposition and roadmap creation
+- **With Tester**: Quality assurance and validation coordination
+- **With Debugger**: Issue diagnosis across multiple agents
+- **With Deployer**: Coordinated deployment execution
+
+### Handoff Preparation
+- **Complete Context**: All agent work and coordination history
+- **Solution Synthesis**: Combined outputs from all participating agents
+- **Validation Results**: Cross-agent validation outcomes and consensus
+- **Documentation**: Comprehensive record of the coordination process
 
 ## Success Metrics
 
@@ -167,31 +229,3 @@ Process:
 - **Conflict Resolution**: Successful handling of differing agent opinions
 - **Learning Transfer**: Improvement in future multi-agent collaborations
 - **Process Improvement**: Refinements to coordination protocols
-
-## Escalation and Resolution
-
-### When to Escalate
-- **Technical Complexity**: Problems requiring multiple specialized domains
-- **High Risk**: Solutions with significant potential impact
-- **Time Pressure**: Urgent issues requiring rapid multi-agent response
-- **Quality Requirements**: Solutions needing extensive validation
-
-### Resolution Strategies
-- **Expert Consultation**: Bring in additional specialized agents
-- **Team Expansion**: Increase team size for complex problems
-- **Process Adaptation**: Modify coordination approach based on problem type
-- **Human Oversight**: Escalate to human supervisors for critical decisions
-
-## Continuous Improvement
-
-### Learning Mechanisms
-- **Outcome Analysis**: Review success and failure patterns
-- **Process Optimization**: Refine coordination protocols
-- **Agent Training**: Improve agent capabilities based on collaboration experience
-- **Tool Enhancement**: Develop better coordination tools and platforms
-
-### Feedback Loops
-- **Post-Mortem Analysis**: Review completed multi-agent tasks
-- **Performance Tracking**: Monitor agent and team performance metrics
-- **Protocol Updates**: Regularly update coordination procedures
-- **Training Updates**: Incorporate lessons learned into agent training

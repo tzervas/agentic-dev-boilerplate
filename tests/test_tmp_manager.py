@@ -1,15 +1,16 @@
 """Tests for tmp_manager module."""
 
-import pytest
-import tempfile
-import shutil
-import os
-from pathlib import Path
-from unittest.mock import patch, mock_open
-import time
 import json
+import os
+import shutil
+import tempfile
+import time
+from pathlib import Path
+from unittest.mock import mock_open, patch
 
-from agentic_dev_boilerplate.tmp_manager import TmpManager, TmpConfig, get_tmp_manager
+import pytest
+
+from agentic_dev_boilerplate.tmp_manager import TmpConfig, TmpManager, get_tmp_manager
 
 
 @pytest.fixture
@@ -27,7 +28,7 @@ def tmp_config(temp_base_dir):
     return TmpConfig(
         base_tmp_dir=temp_base_dir,
         max_age_hours=0.001,  # Very short for testing
-        max_project_dirs=5
+        max_project_dirs=5,
     )
 
 
@@ -37,13 +38,16 @@ def tmp_manager(tmp_config):
     return TmpManager("test_project", tmp_config)
 
 
-@pytest.mark.parametrize("project_name", [
-    "simple_project",
-    "project-with-dashes",
-    "project_with_underscores",
-    "ProjectWithCamelCase",
-    "project with spaces",  # Edge case
-])
+@pytest.mark.parametrize(
+    "project_name",
+    [
+        "simple_project",
+        "project-with-dashes",
+        "project_with_underscores",
+        "ProjectWithCamelCase",
+        "project with spaces",  # Edge case
+    ],
+)
 def test_initialization(project_name, tmp_config):
     """Test TmpManager initialization with various project names."""
     manager = TmpManager(project_name, tmp_config)
@@ -52,12 +56,15 @@ def test_initialization(project_name, tmp_config):
     assert len(manager.project_hash) == 16  # SHA256 hex truncated to 16 chars
 
 
-@pytest.mark.parametrize("task_id,subtask_id", [
-    ("task_123", "subtask_456"),
-    ("simple_task", "simple_subtask"),
-    ("task-with-dashes", "subtask-with-dashes"),
-    ("task_with_underscores", "subtask_with_underscores"),
-])
+@pytest.mark.parametrize(
+    "task_id,subtask_id",
+    [
+        ("task_123", "subtask_456"),
+        ("simple_task", "simple_subtask"),
+        ("task-with-dashes", "subtask-with-dashes"),
+        ("task_with_underscores", "subtask_with_underscores"),
+    ],
+)
 def test_directory_creation(tmp_manager, task_id, subtask_id):
     """Test creating task and subtask directories."""
     task_dir = tmp_manager.get_task_dir(task_id)
@@ -76,7 +83,7 @@ def test_context_persistence(tmp_manager):
     context = {
         "status": "in_progress",
         "metadata": {"key": "value"},
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
 
     tmp_manager.write_task_context(task_id, context)
@@ -101,7 +108,9 @@ def test_binary_data_persistence(tmp_manager):
     assert read_data == data
 
     # Test reading non-existent data
-    assert tmp_manager.read_subtask_data(task_id, subtask_id, "non_existent.bin") is None
+    assert (
+        tmp_manager.read_subtask_data(task_id, subtask_id, "non_existent.bin") is None
+    )
 
 
 def test_cleanup_operations(tmp_manager):
@@ -200,7 +209,7 @@ def test_max_project_dirs_pruning(temp_base_dir, max_dirs):
     config = TmpConfig(
         base_tmp_dir=temp_base_dir,
         max_age_hours=24,  # Don't prune by age
-        max_project_dirs=max_dirs
+        max_project_dirs=max_dirs,
     )
 
     # Create more directories than max
@@ -216,5 +225,9 @@ def test_max_project_dirs_pruning(temp_base_dir, max_dirs):
     manager.prune_old_directories()
 
     # Should keep only max_dirs - 1 (since manager's dir is also kept)
-    remaining = [d for d in config.base_tmp_dir.iterdir() if d.is_dir() and d != manager.project_tmp_dir]
+    remaining = [
+        d
+        for d in config.base_tmp_dir.iterdir()
+        if d.is_dir() and d != manager.project_tmp_dir
+    ]
     assert len(remaining) == max_dirs - 1

@@ -1,0 +1,57 @@
+# {{ project_name }} DevContainer Dockerfile
+
+FROM mcr.microsoft.com/devcontainers/python:3.12
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    build-essential \
+    {% if 'rust' in languages %}pkg-config libssl-dev{% endif %} \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust if needed
+{% if 'rust' in languages %}
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+{% endif %}
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:${PATH}"
+
+# Install Python dependencies
+COPY requirements*.txt pyproject.toml ./
+RUN pip install --upgrade pip && \
+    pip install -e .{% if ai_ml_support %} && \
+    pip install langchain ollama torch{% endif %}
+
+# Install additional development tools
+RUN pip install \
+    black \
+    isort \
+    flake8 \
+    pytest \
+    pytest-cov \
+    pre-commit
+
+{% if ai_ml_support %}
+# Install Ollama for local LLM support
+RUN curl -fsSL https://ollama.ai/install.sh | sh
+
+# Pre-pull common models (optional)
+RUN ollama serve & sleep 5 && \
+    ollama pull llama2:7b && \
+    pkill ollama
+{% endif %}
+
+# Set up user
+RUN useradd -m -s /bin/bash vscode
+USER vscode
+
+# Set working directory
+WORKDIR /workspaces/{{ project_slug }}
+
+# Default command
+CMD ["sleep", "infinity"]

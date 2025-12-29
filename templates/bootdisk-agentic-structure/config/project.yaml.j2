@@ -1,0 +1,54 @@
+# {{ project_name }} Template Configuration
+
+# Project metadata
+project_name: "{{ project_name }}"
+project_slug: "{{ project_slug }}"
+version: "{{ version }}"
+description: "{{ project_description }}"
+author: "{{ author }}"
+author_email: "{{ author_email }}"
+license: "{{ license }}"
+repository_url: "{{ repository_url }}"
+documentation_url: "{{ documentation_url }}"
+
+# Technical configuration
+languages: {{ languages | tojson }}
+frameworks: {{ frameworks | tojson }}
+keywords: {{ keywords | tojson }}
+
+# Feature flags
+ai_ml_support: {{ ai_ml_support | lower }}
+security_critical: {{ security_critical | lower }}
+multi_agent: {{ multi_agent | lower }}
+
+# Agent configuration
+agents:
+  enabled: {{ agents_enabled | tojson }}
+  roles: {{ agent_roles | tojson }}
+
+# DevContainer configuration
+devcontainer:
+  memory_limit: "{{ devcontainer_memory }}"
+  cpu_limit: "{{ devcontainer_cpu }}"
+  features: {{ devcontainer_features | tojson }}
+
+# CI/CD configuration
+workflows:
+  enabled: {{ workflows_enabled | tojson }}
+  quality_gates: {{ quality_gates | tojson }}
+
+# Documentation configuration
+documentation:
+  formats: {{ doc_formats | tojson }}
+  auto_generation: {{ auto_doc_generation | lower }}
+
+# Security configuration
+security:
+  scanning: {{ security_scanning | lower }}
+  audit: {{ security_audit | lower }}
+
+# Development tools
+tools:
+  linting: {{ linting_enabled | lower }}
+  testing: {{ testing_enabled | lower }}
+  formatting: {{ formatting_enabled | lower }}

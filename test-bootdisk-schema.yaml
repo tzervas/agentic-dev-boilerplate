@@ -1,0 +1,119 @@
+project:
+  name: "test-bootdisk-project"
+  description: "Test project using bootdisk agentic structure"
+  repository: "https://github.com/test/test-bootdisk-project"
+  private: false
+  version: "1.0.0"
+
+languages:
+  - name: "python"
+    version: "3.12"
+  - name: "rust"
+    version: "1.70"
+
+frameworks:
+  - "langchain"
+  - "ollama"
+  - "torch"
+
+keywords:
+  - "ai"
+  - "agents"
+  - "development"
+  - "automation"
+
+agents:
+  - role: "swe"
+    enabled: true
+    capabilities: ["code_implementation", "debugging"]
+    model: "gpt-4"
+  - role: "test_engineer"
+    enabled: true
+    capabilities: ["testing", "validation"]
+    model: "gpt-4"
+
+workflows:
+  pr_automation: true
+  task_tracking: true
+  commit_signing: true
+documentation:
+  readme_generation: true
+  api_docs: false
+  changelog: true
+  contributing_guide: true
+  code_of_conduct: true
+
+
+  ci_cd: true
+  gitops: false
+  security_scanning: true
+
+quality_gates:
+  test_coverage: 70
+  linting: true
+  security_scanning: true
+
+ai_ml_support: true
+
+ci_cd:
+  provider: "github_actions"
+  phases:
+    - name: "validate"
+      trigger: ["push", "pull_request"]
+      jobs: ["lint", "test", "security"]
+
+
+security:
+  gpg_signing: true
+  dependency_scanning: true
+  secret_scanning: true
+  vulnerability_scanning: true
+  license_checking: true
+
+
+validation:
+  commit_message_format: "conventional"
+  pr_title_format: "conventional"
+  branch_naming: "feature/*"
+  required_checks: ["lint", "test", "security"]
+  code_coverage_minimum: 80
+
+
+git:
+  default_branch: "main"
+  commit_signing: true
+  pull_rebase: true
+  push_default: "current"
+  auto_setup_remote: true
+  aliases:
+    co: "checkout"
+    br: "branch"
+    st: "status"
+    ci: "commit"
+security_critical: false
+multi_agent: true
+
+author: "Test Author"
+author_email: "test@example.com"
+license: "MIT"
+repository_url: "https://github.com/test/test-bootdisk-project"
+documentation_url: "https://test-bootdisk-project.readthedocs.io"
+
+devcontainer_memory: "8g"
+devcontainer_cpu: "4.0"
+devcontainer_features: ["docker", "python", "rust"]
+
+agents_enabled: ["swe", "test_engineer", "project_manager", "qa_evaluator", "communicator", "devops", "security", "documentation"]
+agent_roles: ["swe", "test_engineer", "project_manager", "qa_evaluator", "communicator", "devops", "security", "documentation"]
+
+workflows_enabled: ["ci_cd", "pr_automation", "agent_coordination"]
+
+doc_formats: ["markdown", "html"]
+auto_doc_generation: true
+
+security_scanning: true
+security_audit: true
+
+linting_enabled: true
+testing_enabled: true
+formatting_enabled: true

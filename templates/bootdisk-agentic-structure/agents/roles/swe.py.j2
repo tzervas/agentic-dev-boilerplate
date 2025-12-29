@@ -1,0 +1,119 @@
+# {{ project_slug }}/agents/roles/swe.py
+
+"""Software Engineer agent for code implementation and optimization."""
+
+import logging
+from typing import List, Dict, Any, Optional
+from pathlib import Path
+
+{% if ai_ml_support %}
+from langchain.agents import Tool
+from langchain.prompts import PromptTemplate
+{% endif %}
+
+logger = logging.getLogger(__name__)
+
+
+class SoftwareEngineerAgent:
+    """AI agent specialized in software engineering tasks."""
+
+    def __init__(self, name: str, model: str = "gpt-4", capabilities: List[str] = None):
+        self.name = name
+        self.model = model
+        self.capabilities = capabilities or [
+            "code_implementation",
+            "code_optimization",
+            "debugging",
+            "refactoring",
+            "testing"
+        ]
+        {% if ai_ml_support %}
+        self.tools = self._initialize_tools()
+        {% endif %}
+
+    {% if ai_ml_support %}
+    def _initialize_tools(self) -> List[Tool]:
+        """Initialize agent tools."""
+        return [
+            Tool(
+                name="run_tests",
+                description="Run test suite for the codebase",
+                func=self._run_tests
+            ),
+            Tool(
+                name="lint_code",
+                description="Lint and format code",
+                func=self._lint_code
+            ),
+            Tool(
+                name="build_project",
+                description="Build the project",
+                func=self._build_project
+            )
+        ]
+
+    def get_tools(self) -> List[Tool]:
+        """Get available tools for this agent."""
+        return self.tools
+    {% endif %}
+
+    async def implement_feature(self, requirements: Dict[str, Any]) -> Dict[str, Any]:
+        """Implement a new feature based on requirements."""
+        logger.info(f"Implementing feature: {requirements.get('name', 'unknown')}")
+
+        # Implementation logic here
+        # This would integrate with the actual codebase
+
+        return {
+            "status": "completed",
+            "files_modified": [],
+            "tests_added": [],
+            "documentation_updated": False
+        }
+
+    async def optimize_code(self, target_files: List[str]) -> Dict[str, Any]:
+        """Optimize code for performance and maintainability."""
+        logger.info(f"Optimizing {len(target_files)} files")
+
+        # Optimization logic here
+
+        return {
+            "status": "completed",
+            "optimizations_applied": [],
+            "performance_improvements": {}
+        }
+
+    async def debug_issue(self, issue_description: str) -> Dict[str, Any]:
+        """Debug and fix an issue."""
+        logger.info(f"Debugging issue: {issue_description}")
+
+        # Debugging logic here
+
+        return {
+            "status": "completed",
+            "root_cause": "",
+            "fix_applied": "",
+            "tests_added": []
+        }
+
+    {% if ai_ml_support %}
+    def _run_tests(self, query: str) -> str:
+        """Run the test suite."""
+        # Implementation for running tests
+        return "Tests executed successfully"
+
+    def _lint_code(self, query: str) -> str:
+        """Lint and format code."""
+        # Implementation for linting
+        return "Code linted and formatted"
+
+    def _build_project(self, query: str) -> str:
+        """Build the project."""
+        # Implementation for building
+        return "Project built successfully"
+    {% endif %}
+
+    async def shutdown(self) -> None:
+        """Cleanup agent resources."""
+        logger.info(f"Shutting down agent: {self.name}")
+        # Cleanup logic here

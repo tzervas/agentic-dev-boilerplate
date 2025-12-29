@@ -1,62 +1,75 @@
 """Integration tests for the agentic-dev-boilerplate package."""
 
-import pytest
+import json
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 import yaml
-import json
 
 
 @pytest.fixture
 def sample_project_schema(tmp_path):
     """Create a complete sample project schema for integration testing."""
     schema = {
-        "project": "integration_test_project",
-        "version": "1.0.0",
-        "description": "Test project for integration testing",
-        "languages": ["python"],
-        "frameworks": ["pytest", "black"],
+        "project": {
+            "name": "integration_test_project",
+            "description": "Test project for integration testing",
+            "repository": "https://github.com/test/integration_test_project",
+            "private": False,
+            "version": "1.0.0",
+        },
+        "languages": [
+            {
+                "name": "python",
+                "version": "3.11",
+                "frameworks": ["pytest", "black"],
+                "package_manager": "uv",
+                "testing": ["pytest"],
+                "linting": ["black", "isort"],
+                "type_checking": ["mypy"],
+            }
+        ],
         "agents": [
             {
                 "role": "planner",
                 "enabled": True,
-                "capabilities": ["task_decomposition", "priority_assessment"],
-                "model": "gpt-4"
+                "scope": ["task_decomposition", "priority_assessment"],
             },
             {
                 "role": "tester",
                 "enabled": True,
-                "capabilities": ["unit_testing", "integration_testing"],
-                "model": "gpt-3.5-turbo"
+                "scope": ["unit_testing", "integration_testing"],
             },
             {
                 "role": "debugger",
                 "enabled": False,
-                "capabilities": ["error_analysis", "fix_suggestions"],
-                "model": "gpt-4"
-            }
-        ],
-        "workflows": [
-            {
-                "name": "development",
-                "description": "Standard development workflow",
-                "stages": ["plan", "implement", "test", "deploy"]
+                "scope": ["error_analysis", "fix_suggestions"],
             },
-            {
-                "name": "hotfix",
-                "description": "Quick fix workflow",
-                "stages": ["analyze", "fix", "test"]
-            }
         ],
-        "quality_gates": {
-            "test_coverage": 80,
-            "linting": True,
-            "type_checking": True
-        }
+        "workflows": {
+            "pr_automation": True,
+            "task_tracking": True,
+            "commit_signing": True,
+            "ci_cd": True,
+            "gitops": False,
+            "security_scanning": True,
+            "dependency_management": True,
+            "multi_agent_coordination": True,
+        },
+        "git": {"default_branch": "main", "commit_signing": True},
+        "ci_cd": {"provider": "github_actions"},
+        "validation": {"code_coverage_minimum": 80},
+        "security": {"gpg_signing": True},
+        "documentation": {
+            "readme_generation": True,
+            "contributing_guide": True,
+            "changelog": True,
+        },
     }
     schema_file = tmp_path / "project_schema.yaml"
-    with open(schema_file, 'w') as f:
+    with open(schema_file, "w") as f:
         yaml.dump(schema, f)
     return schema_file
 
@@ -75,16 +88,20 @@ def test_cli_entry_point_installation():
     result = subprocess.run(
         [sys.executable, "-c", "import agentic_dev_boilerplate.generate_boilerplate"],
         capture_output=True,
-        text=True
+        text=True,
     )
-    assert result.returncode == 0, f"Failed to import generate_boilerplate: {result.stderr}"
+    assert (
+        result.returncode == 0
+    ), f"Failed to import generate_boilerplate: {result.stderr}"
 
 
 def test_full_boilerplate_generation(sample_project_schema, generation_output_dir):
     """Integration test for complete boilerplate generation."""
     from agentic_dev_boilerplate.generate_boilerplate import BoilerplateGenerator
 
-    generator = BoilerplateGenerator(str(sample_project_schema), str(generation_output_dir))
+    generator = BoilerplateGenerator(
+        str(sample_project_schema), str(generation_output_dir)
+    )
 
     # Generate the complete boilerplate
     generator.generate()
@@ -112,7 +129,9 @@ def test_generated_files_content(sample_project_schema, generation_output_dir):
     """Test that generated files contain expected content."""
     from agentic_dev_boilerplate.generate_boilerplate import BoilerplateGenerator
 
-    generator = BoilerplateGenerator(str(sample_project_schema), str(generation_output_dir))
+    generator = BoilerplateGenerator(
+        str(sample_project_schema), str(generation_output_dir)
+    )
     generator.generate()
 
     # Check README content
@@ -122,19 +141,25 @@ def test_generated_files_content(sample_project_schema, generation_output_dir):
     assert "integration_test_project" in content
 
     # Check that agent instructions contain project name
-    planner_instructions = generation_output_dir / ".github" / "instructions" / "planner.instructions.md"
+    planner_instructions = (
+        generation_output_dir / ".github" / "instructions" / "planner.instructions.md"
+    )
     assert planner_instructions.exists()
     content = planner_instructions.read_text()
     assert "integration_test_project" in content
 
 
-def test_template_rendering_with_real_templates(sample_project_schema, generation_output_dir):
+def test_template_rendering_with_real_templates(
+    sample_project_schema, generation_output_dir
+):
     """Test template rendering with actual template files."""
     # This test would require the actual templates directory
     # For now, we'll test the template loading mechanism
     from agentic_dev_boilerplate.generate_boilerplate import BoilerplateGenerator
 
-    generator = BoilerplateGenerator(str(sample_project_schema), str(generation_output_dir))
+    generator = BoilerplateGenerator(
+        str(sample_project_schema), str(generation_output_dir)
+    )
 
     # Verify templates directory exists and contains files
     assert generator.templates_dir.exists()
@@ -144,11 +169,15 @@ def test_template_rendering_with_real_templates(sample_project_schema, generatio
     assert generator.jinja_env is not None
 
 
-def test_schema_persistence_in_generated_project(sample_project_schema, generation_output_dir):
+def test_schema_persistence_in_generated_project(
+    sample_project_schema, generation_output_dir
+):
     """Test that project schema is properly embedded in generated files."""
     from agentic_dev_boilerplate.generate_boilerplate import BoilerplateGenerator
 
-    generator = BoilerplateGenerator(str(sample_project_schema), str(generation_output_dir))
+    generator = BoilerplateGenerator(
+        str(sample_project_schema), str(generation_output_dir)
+    )
     generator.generate()
 
     # Check if any generated files contain schema-derived content
@@ -163,7 +192,9 @@ def test_workflow_file_generation(sample_project_schema, generation_output_dir):
     """Test that GitHub workflow files are properly generated."""
     from agentic_dev_boilerplate.generate_boilerplate import BoilerplateGenerator
 
-    generator = BoilerplateGenerator(str(sample_project_schema), str(generation_output_dir))
+    generator = BoilerplateGenerator(
+        str(sample_project_schema), str(generation_output_dir)
+    )
     generator.generate()
 
     workflows_dir = generation_output_dir / ".github" / "workflows"
@@ -180,7 +211,9 @@ def test_task_tracking_generation(sample_project_schema, generation_output_dir):
     """Test that task tracking files are generated."""
     from agentic_dev_boilerplate.generate_boilerplate import BoilerplateGenerator
 
-    generator = BoilerplateGenerator(str(sample_project_schema), str(generation_output_dir))
+    generator = BoilerplateGenerator(
+        str(sample_project_schema), str(generation_output_dir)
+    )
     generator.generate()
 
     # Check for tasking directory and files
@@ -192,17 +225,22 @@ def test_task_tracking_generation(sample_project_schema, generation_output_dir):
 
     # Verify tracker content
     import yaml
+
     tracker_data = yaml.safe_load(tracker_file.read_text())
     assert "project" in tracker_data
     assert tracker_data["project"] == "integration_test_project"
 
 
 @pytest.mark.slow
-def test_generated_project_is_valid_python_package(sample_project_schema, generation_output_dir):
+def test_generated_project_is_valid_python_package(
+    sample_project_schema, generation_output_dir
+):
     """Test that the generated project is a valid Python package."""
     from agentic_dev_boilerplate.generate_boilerplate import BoilerplateGenerator
 
-    generator = BoilerplateGenerator(str(sample_project_schema), str(generation_output_dir))
+    generator = BoilerplateGenerator(
+        str(sample_project_schema), str(generation_output_dir)
+    )
     generator.generate()
 
     # Check for pyproject.toml
@@ -211,7 +249,8 @@ def test_generated_project_is_valid_python_package(sample_project_schema, genera
 
     # Basic validation that it's parseable TOML
     import tomllib
-    with open(pyproject, 'rb') as f:
+
+    with open(pyproject, "rb") as f:
         data = tomllib.load(f)
     assert "project" in data
     assert data["project"]["name"] == "integration_test_project"
@@ -221,10 +260,14 @@ def test_cross_platform_path_handling(sample_project_schema, generation_output_d
     """Test that path handling works across platforms."""
     from agentic_dev_boilerplate.generate_boilerplate import BoilerplateGenerator
 
-    generator = BoilerplateGenerator(str(sample_project_schema), str(generation_output_dir))
+    generator = BoilerplateGenerator(
+        str(sample_project_schema), str(generation_output_dir)
+    )
     generator.generate()
 
     # Verify that all generated paths use forward slashes or are platform-appropriate
     # This is more of a sanity check
     assert generation_output_dir.exists()
-    assert len(list(generation_output_dir.rglob("*"))) > 10  # Reasonable number of files
+    assert (
+        len(list(generation_output_dir.rglob("*"))) > 10
+    )  # Reasonable number of files

@@ -5,19 +5,23 @@ Setup uv and Python environment for agentic-dev-boilerplate
 This script installs uv and sets up the Python virtual environment.
 """
 
+import os
 import subprocess
 import sys
-import os
 from pathlib import Path
+
 
 def run_command(cmd, capture_output=True):
     """Run a shell command and return the result."""
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=capture_output, text=True)
+        result = subprocess.run(
+            cmd, shell=True, capture_output=capture_output, text=True
+        )
         return result.returncode == 0, result.stdout.strip() if capture_output else None
     except Exception as e:
         print(f"Error running command: {e}")
         return False, None
+
 
 def install_uv():
     """Install uv if not already installed."""
@@ -46,6 +50,7 @@ def install_uv():
         print("❌ Failed to install uv")
         return False
 
+
 def setup_venv():
     """Set up Python virtual environment with uv."""
     print("🐍 Setting up Python virtual environment...")
@@ -72,6 +77,7 @@ def setup_venv():
         print("⚠️  No pyproject.toml found, skipping dependency installation")
         return True
 
+
 def main():
     print("🚀 Setting up agentic-dev-boilerplate development environment...")
 
@@ -89,6 +95,7 @@ def main():
     print("\nTo run commands with uv:")
     print("  uv run python your_script.py")
     print("  uv run pytest")
+
 
 if __name__ == "__main__":
     main()

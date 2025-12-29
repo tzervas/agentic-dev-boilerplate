@@ -4,6 +4,7 @@ project:
   repository: "https://github.com/tzervas/agentic-dev-boilerplate"
   private: true
   version: "1.1.1"
+  license: "MIT License"
 
 languages:
   - name: "python"
@@ -42,6 +43,33 @@ agents:
   - role: "ai-engineer"
     enabled: true
     scope: ["ml-model-development", "ai-integration", "data-pipeline-optimization"]
+  - role: "security"
+    enabled: true
+    scope: ["security-audits", "vulnerability-assessment", "access-control"]
+  - role: "api-developer"
+    enabled: true
+    scope: ["api-design", "endpoint-implementation", "documentation"]
+  - role: "project-manager"
+    enabled: true
+    scope: ["milestone-tracking", "resource-allocation", "stakeholder-communication"]
+  - role: "frontend-developer"
+    enabled: true
+    scope: ["ui-development", "responsive-design", "user-experience"]
+  - role: "backend-developer"
+    enabled: true
+    scope: ["server-development", "database-design", "api-implementation"]
+  - role: "fullstack-developer"
+    enabled: true
+    scope: ["end-to-end-development", "system-integration", "deployment-coordination"]
+  - role: "mobile-developer"
+    enabled: true
+    scope: ["mobile-app-development", "cross-platform", "app-store-optimization"]
+  - role: "data-scientist"
+    enabled: true
+    scope: ["data-analysis", "statistical-modeling", "insight-extraction"]
+  - role: "ml-engineer"
+    enabled: true
+    scope: ["ml-pipeline-development", "model-deployment", "mlops"]
 
 workflows:
   pr_automation: true

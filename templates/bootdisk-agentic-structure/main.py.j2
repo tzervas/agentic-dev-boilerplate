@@ -1,0 +1,23 @@
+# {{ project_slug }}/main.py
+
+"""Main entry point for {{ project_name }}."""
+
+import asyncio
+import logging
+import sys
+from pathlib import Path
+
+# Add src to path for imports
+sys.path.insert(0, str(Path(__file__).parent / "src"))
+
+from {{ project_slug }}.cli import main
+
+if __name__ == "__main__":
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    # Run the CLI
+    asyncio.run(main())

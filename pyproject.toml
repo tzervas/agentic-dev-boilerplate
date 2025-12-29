@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agentic-dev-boilerplate"
-version = "1.1.2"
+version = "1.1.4"
 description = "Templatized repository for generating agentic development workflows and automations"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -17,14 +17,16 @@ maintainers = [
 ]
 keywords = ["python"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-
-
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
-
-
-    "Topic :: Software Development",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
 ]
 
 dependencies = [
@@ -37,6 +39,7 @@ dependencies = [
     "isort==7.0.0",
     "flake8==7.3.0",
     "mypy==1.19.1",
+    "chngbrgr>=0.1.0",
 ]
 
 [project.scripts]
@@ -157,5 +160,7 @@ exclude_lines = [
 
 [dependency-groups]
 dev = [
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
     "twine>=6.2.0",
 ]

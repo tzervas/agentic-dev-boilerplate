@@ -2,7 +2,7 @@
 
 A comprehensive template system for generating agentic development workflows and automation infrastructure.
 
-**Version**: 1.1.2  
+**Version**: 1.1.1
 **Repository**: https://github.com/tzervas/agentic-dev-boilerplate
 
 ## Overview
@@ -15,14 +15,14 @@ This project provides a complete foundation for building agentic development sys
 
 #### From PyPI (Recommended)
 ```bash
-pip install agentic-dev-boilerplate
+uv pip install agentic-dev-boilerplate
 ```
 
 #### From Source
 ```bash
 git clone https://github.com/tzervas/agentic-dev-boilerplate
 cd agentic-dev-boilerplate
-pip install -e .
+uv pip install -e .
 ```
 
 ### Generate Boilerplate
@@ -35,11 +35,19 @@ agentic-dev-boilerplate --schema project-schema.yaml --output ./my-project
 
 # Or use short options
 agentic-dev-boilerplate -s my-schema.yaml -o ./my-project
+
+# Use a specific template (default: default)
+agentic-dev-boilerplate --template bootdisk-agentic-structure --schema my-schema.yaml --output ./my-project
 ```
+
+**Available Templates:**
+- `default`: Standard agentic development boilerplate
+- `bootdisk-agentic-structure`: Bootdisk project structure with integrated agentic workflows
 
 ## Prerequisites
 
 - **Python** 3.11 or later
+- **UV** (fast Python package manager) - install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - **Git** 2.30+ (for version control)
 - **GPG** (for commit signing)
 
@@ -262,4 +270,4 @@ Each agent has specialized instructions in `.github/instructions/` that define t
 
 ## License
 
-MIT License. See LICENSE file for details.
+See LICENSE file for details.

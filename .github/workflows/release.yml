@@ -55,7 +55,7 @@ jobs:
             ## Installation
 
             ```bash
-            pip install agentic-dev-boilerplate
+            uv pip install agentic-dev-boilerplate
             ```
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

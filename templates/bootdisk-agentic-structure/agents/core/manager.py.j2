@@ -1,0 +1,94 @@
+# {{ project_slug }}/agents/core/manager.py
+
+"""Core agent management and orchestration."""
+
+import asyncio
+import logging
+from typing import Dict, List, Optional, Any
+from pathlib import Path
+
+{% if ai_ml_support %}
+from langchain.agents import AgentExecutor
+from langchain.chat_models import ChatOpenAI
+{% endif %}
+
+from ..config.settings import AgentSettings
+from ..roles import get_agent_role
+
+logger = logging.getLogger(__name__)
+
+
+class AgentManager:
+    """Manages the lifecycle and coordination of AI agents."""
+
+    def __init__(self, settings: AgentSettings):
+        self.settings = settings
+        self.agents: Dict[str, Any] = {}
+        self.workflows: Dict[str, Any] = {}
+        {% if ai_ml_support %}
+        self.llm = ChatOpenAI(temperature=0.1)
+        {% endif %}
+
+    async def initialize_agents(self) -> None:
+        """Initialize all configured agents."""
+        logger.info("Initializing agents...")
+
+        for agent_config in self.settings.enabled_agents:
+            agent_role = get_agent_role(agent_config.role)
+            agent_instance = agent_role(
+                name=agent_config.name,
+                model=agent_config.model,
+                capabilities=agent_config.capabilities
+            )
+
+            {% if ai_ml_support %}
+            # Wrap with LangChain executor if ML support enabled
+            executor = AgentExecutor.from_agent_and_tools(
+                agent=agent_instance,
+                tools=agent_instance.get_tools(),
+                verbose=self.settings.verbose
+            )
+            self.agents[agent_config.name] = executor
+            {% else %}
+            self.agents[agent_config.name] = agent_instance
+            {% endif %}
+
+        logger.info(f"Initialized {len(self.agents)} agents")
+
+    async def execute_workflow(self, workflow_name: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute a named workflow with the given context."""
+        if workflow_name not in self.workflows:
+            raise ValueError(f"Workflow '{workflow_name}' not found")
+
+        workflow = self.workflows[workflow_name]
+        return await workflow.execute(context)
+
+    async def get_agent_status(self) -> Dict[str, Any]:
+        """Get status of all agents."""
+        return {
+            name: {
+                "status": "active",
+                "capabilities": agent.capabilities if hasattr(agent, 'capabilities') else []
+            }
+            for name, agent in self.agents.items()
+        }
+
+    def get_agent(self, name: str) -> Optional[Any]:
+        """Get a specific agent by name."""
+        return self.agents.get(name)
+
+    async def shutdown(self) -> None:
+        """Shutdown all agents and cleanup resources."""
+        logger.info("Shutting down agents...")
+
+        # Shutdown agents concurrently
+        shutdown_tasks = []
+        for agent in self.agents.values():
+            if hasattr(agent, 'shutdown'):
+                shutdown_tasks.append(agent.shutdown())
+
+        if shutdown_tasks:
+            await asyncio.gather(*shutdown_tasks, return_exceptions=True)
+
+        self.agents.clear()
+        logger.info("Agent shutdown complete")
