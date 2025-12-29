@@ -3,11 +3,11 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agentic-dev-boilerplate"
+name = "test-bootdisk-project"
 version = "1.0.0"
-description = "Templatized repository for generating agentic development workflows and automations"
+description = "Test project using bootdisk agentic structure"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 authors = [
     {name = "Your Name", email = "your.email@example.com"},
@@ -15,13 +15,15 @@ authors = [
 maintainers = [
     {name = "Your Name", email = "your.email@example.com"},
 ]
-keywords = ["python"]
+keywords = ["python", "rust"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
 
 
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+
+
 
 
     "Topic :: Software Development",
@@ -31,26 +33,10 @@ dependencies = [
 
 
 
-    "jinja2",
-
-    "pyyaml",
-
-    "click",
 
 
-    "pytest",
-
-    "pytest-cov",
 
 
-    "black",
-
-    "isort",
-
-    "flake8",
-
-
-    "mypy",
 
 
 
@@ -61,19 +47,9 @@ dev = [
 
 
 
-    "pytest",
-
-    "pytest-cov",
 
 
-    "black",
 
-    "isort",
-
-    "flake8",
-
-
-    "mypy",
 
 
 
@@ -84,18 +60,18 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/tzervas/agentic-dev-boilerplate"
-Repository = "https://github.com/tzervas/agentic-dev-boilerplate"
+Homepage = "https://github.com/test/test-bootdisk-project"
+Repository = "https://github.com/test/test-bootdisk-project"
 
-Changelog = "https://github.com/tzervas/agentic-dev-boilerplate/blob/main/CHANGELOG.md"
+Changelog = "https://github.com/test/test-bootdisk-project/blob/main/CHANGELOG.md"
 
 
-Contributing = "https://github.com/tzervas/agentic-dev-boilerplate/blob/main/CONTRIBUTING.md"
+Contributing = "https://github.com/test/test-bootdisk-project/blob/main/CONTRIBUTING.md"
 
 
 [tool.black]
 line-length = 88
-target-version = ['py311']
+target-version = ['py312']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -115,11 +91,11 @@ extend-exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 88
-known_first_party = ["agentic-dev-boilerplate"]
+known_first_party = ["test-bootdisk-project"]
 skip = ["__init__.py"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -147,7 +123,7 @@ testpaths = [
 ]
 
 [tool.coverage.run]
-source = ["agentic-dev-boilerplate"]
+source = ["test-bootdisk-project"]
 omit = [
     "tests/*",
     "*/venv/*",

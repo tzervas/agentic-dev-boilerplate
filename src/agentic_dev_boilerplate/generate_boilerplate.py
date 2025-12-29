@@ -5,14 +5,15 @@ Agentic Development Boilerplate Generator
 Generates tailored development workflows and automations based on project schema.
 """
 
-import os
-import yaml
 import json
+import os
 import shutil
 from pathlib import Path
-from jinja2 import Environment, FileSystemLoader
+from typing import Any, Dict, List
+
 import click
-from typing import Dict, Any, List
+import yaml
+from jinja2 import Environment, FileSystemLoader
 
 
 class BoilerplateGenerator:
@@ -465,4 +466,4 @@ def main(schema, output, template):
 
 
 if __name__ == "__main__":
-    main()
+    main()    main()

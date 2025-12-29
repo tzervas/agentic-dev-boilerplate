@@ -1,292 +1,162 @@
-# agentic-dev-boilerplate
+#  - Agentic Development Template
 
-Templatized repository for generating agentic development workflows and automations
-
-
-**Version**: 1.0.0
-
-
-
-**Repository**: https://github.com/tzervas/agentic-dev-boilerplate
 
 
 ## Overview
 
-This project uses an agentic development workflow with automated:
-- 🤖 Multi-agent task coordination and execution
-- 🔄 PR creation, validation, and enrichment
-- 📋 Intelligent task tracking and status management
-- 🔐 Commit signing enforcement
-- 🚀 CI/CD automation with comprehensive testing
-- 📊 Quality assurance and validation
+This project template provides a comprehensive agentic development environment with:
+
+- **Multi-Agent Architecture**: 7 specialized AI agents for collaborative development
+- **GitHub Copilot Integration**: Custom instructions and dynamic prompts
+- **DevContainer Environment**: Containerized development with ML/AI tooling
+- **Hybrid Development**: Support for multiple programming languages
+- **Automated Documentation**: Structured docs with generation tooling
+- **CI/CD Integration**: GitHub Actions for quality assurance and deployment
 
 ## Quick Start
 
-### Prerequisites
+### Using DevContainer (Recommended)
 
+1. Open in VS Code
+2. Use Command Palette: `Dev Containers: Reopen in Container`
+3. The environment will automatically configure with agent assistance
 
-- **Python** 3.11
- (uv)
+### Manual Setup
 
-- **Git** 2.30+
-- **GPG** (for commit signing)
-
-### Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/tzervas/agentic-dev-boilerplate
-   cd agentic-dev-boilerplate
-   ```
-
-2. **Set up development environment**
-   ```bash
-   python scripts/setup_uv.py
-   ```
-
-3. **Configure git**
-   ```bash
-   python scripts/git_setup.py --setup
-   ```
-
-
-4. **Set up commit signing**
-   ```bash
-   python scripts/setup_gpg.py
-   ```
-
-
-## Development Workflow
-
-### 1. Task Planning
-Use the planner agent to break down features:
 ```bash
-# Tasks are tracked in tasking/tracker.yaml
-# Context files are stored in tasking/context/
+# Install dependencies
+pip install -e .
+
+# Configure agents
+python -m  configure
+
+# Start development
+python main.py
 ```
 
-### 2. Implementation
-- Create feature branches: `git checkout -b feature/task-name`
-- Implement changes following project standards
-- Write tests for new functionality
+## Agentic Architecture
 
-### 3. Testing & Validation
-```bash
-# Run validation suite
-python scripts/validation_scripts.py
+### Core Agents
 
-# Run language-specific tests
+- **Software Engineer**: Code implementation and optimization
+- **Test Engineer**: Quality assurance and validation
+- **Project Manager**: Coordination and planning
+- **QA Evaluator**: Quality gates and final approval
+- **Communicator**: Information management and RAG coordination
+- **DevOps**: Infrastructure and deployment
+- **Security**: Security assessment and implementation
+- **Documentation**: Technical writing and automated documentation
 
+### Development Workflow
 
-uv run pytest
-
-
-```
-
-### 4. Create PR
-```bash
-# Create PR with automation
-python scripts/create_pr_local.py
-
-# Or use GitHub CLI
-gh pr create --fill
-```
-
-### 5. Code Review
-- PRs are automatically enriched with labels and milestones
-- Validation runs automatically on PR events
-- Reviews ensure code quality and standards compliance
-
-## Multi-Agent Coordination
-
-This project supports collaborative problem-solving through multi-agent coordination:
-
-### Starting Multi-Agent Sessions
-```bash
-# Solve complex problems with multiple agents
-python scripts/multi_agent_solver.py \
-  --problem "Implement user authentication system" \
-  --agents planner tester debugger deployer \
-  --consensus-threshold 0.8
-```
-
-### Agent Teamwork Features
-- **🤖 Orchestrated Problem Decomposition**: Complex tasks automatically broken down
-- **🔄 Cross-Agent Validation**: Solutions validated by multiple specialized agents
-- **📊 Consensus Building**: Team agreement on optimal solutions
-- **📋 Collaborative Tracking**: Shared progress and status updates
-- **🚀 Coordinated Execution**: Synchronized implementation across agents
-
-### Available Agents
-
-- **Planner**: Task-Decomposition, Roadmap-Generation, Agent-Routing
-
-- **Tester**: Validation-Suites, Test-Execution, Result-Analysis
-
-- **Debugger**: Root-Cause-Analysis, Log-Processing, Patch-Development
-
-- **Deployer**: Production-Deployment, Rollback-Orchestration, Change-Management
-
-- **Systems-Engineer**: Hardware-Emulation, Iommu-Vfio, Gpu-Passthrough
-
-- **Devops-Specialist**: Infrastructure-Automation, Ci-Cd, Network-Orchestration
-
-- **Orchestrator**: Multi-Agent-Coordination, Collaborative-Problem-Solving, Team-Consensus
-
-
-### GitHub Integration
-Label issues or PRs to trigger multi-agent coordination:
-- `testing` → Involves tester agent
-- `debug` → Involves debugger agent
-- `deploy` → Involves deployer agent
-- `infra` → Involves systems engineer and devops specialist
+1. **Planning**: Project Manager coordinates task breakdown
+2. **Implementation**: SWE implements with security and performance focus
+3. **Testing**: Test Engineer validates functionality
+4. **Security Review**: Security agent checks for vulnerabilities
+5. **Quality Gate**: QA Evaluator ensures standards
+6. **Documentation**: Automated docs generation
+7. **Deployment**: DevOps handles release
 
 ## Project Structure
 
 ```
-├── .github/
-│   ├── instructions/          # Agent instruction files
-│   ├── prompts/              # Reusable prompt templates
-│   ├── scripts/              # PR automation scripts
-│   └── workflows/            # GitHub Actions
-├── scripts/                  # Utility scripts
-├── tasking/                  # Task tracking system
-│   ├── tracker.yaml         # Main task tracker
-│   ├── context/             # Task context files
-│   └── plan.md              # Project roadmap
+/
+├── .devcontainer/           # Containerized development environment
+├── .github/                 # GitHub integration and automation
+│   ├── copilot-instructions/ # Custom Copilot instructions
+│   ├── prompts/             # Dynamic prompt templates
+│   └── workflows/           # CI/CD pipelines
+├── agents/                  # AI agent implementations
+│   ├── core/               # Agent infrastructure
+│   ├── roles/              # Specialized agent roles
+│   ├── tools/              # Agent tools and integrations
+│   └── config/             # Agent configuration
+├── config/                  # Project configuration
 ├── docs/                    # Documentation
-
+├── scripts/                 # Utility scripts
 ├── src/                     # Source code
-
-├── tests/                   # Test files
-├── requirements.txt         # Python dependencies
-
-
-└── README.md
+├── tests/                   # Test suites
+└── output/                  # Build artifacts
 ```
 
-## Agent System
+## Configuration
 
-### Core Agents
+The project uses YAML-based configuration:
 
+```yaml
+project:
+  name: ""
+  version: ""
+  description: ""
 
-- **Planner**: Task-Decomposition, Roadmap-Generation, Agent-Routing
+agents:
+  enabled: [swe, test_engineer, project_manager, qa_evaluator, communicator, devops, security, documentation]
 
+languages: 
 
+workflows:
+  - development
+  - testing
+  - deployment
+```
 
-- **Tester**: Validation-Suites, Test-Execution, Result-Analysis
+## Development
 
+### Prerequisites
 
+- VS Code with Dev Containers extension
+- Docker
+- 8GB+ RAM recommended
 
-- **Debugger**: Root-Cause-Analysis, Log-Processing, Patch-Development
+### Agent-Assisted Development
 
+The project includes AI agents to accelerate development:
 
+```bash
+# Get agent assistance
+python -m  agent help
 
-- **Deployer**: Production-Deployment, Rollback-Orchestration, Change-Management
+# Run agent workflow
+python -m  agent workflow development
 
+# Validate with agents
+python -m  agent validate
+```
 
+### Quality Assurance
 
-- **Systems-Engineer**: Hardware-Emulation, Iommu-Vfio, Gpu-Passthrough
+```bash
+# Run tests
+python -m pytest
 
+# Security scanning
+python -m  security scan
 
-
-- **Devops-Specialist**: Infrastructure-Automation, Ci-Cd, Network-Orchestration
-
-
-
-- **Orchestrator**: Multi-Agent-Coordination, Collaborative-Problem-Solving, Team-Consensus
-
-
-
-### Agent Instructions
-Each agent has specialized instructions in `.github/instructions/` that define:
-- Role and responsibilities
-- When to use specific prompts
-- Workflow integration patterns
-- Success metrics
-
-## Quality Assurance
-
-### Automated Validation
-- **PR Automation**: Labels, milestones, issue linking
-- **Code Quality**: Linting, formatting, type checking
-- **Testing**: Unit, integration, and system tests
-- **Security**: Dependency scanning, vulnerability checks
-
-### Manual Reviews
-- Code review requirements
-- Architecture decisions
-- Performance considerations
-- Security implications
-
-## Contributing
-
-1. **Follow the workflow**: Use task tracking and agent coordination
-2. **Write tests**: Ensure adequate test coverage
-3. **Sign commits**: All commits must be GPG signed
-4. **Create PRs**: Use the automated PR creation tools
-
-### Commit Standards
-- Use conventional commit format: `type(scope): description`
-- Sign all commits: `git commit -S`
-- Reference task IDs in commit messages
-
-### PR Requirements
-- Automated validation must pass
-- Appropriate test coverage
-- Documentation updated
-- Task tracker updated
-
-## CI/CD Pipeline
-
-
-### Pipeline Stages
-
-- **Validate**: lint, test, security
-
-- **Build**: build, package
-
-- **Deploy**: deploy staging, deploy production
-
-
-
-### Quality Gates
-
-- Lint
-
-- Test
-
-- Security
-
-
-- Minimum 80% code coverage
-
-
-## Security
-
-
-- **Commit Signing**: All commits must be GPG signed
-
-
-- **Dependencies**: Regular security scanning and updates
-
-
-- **Secrets**: Automated detection of exposed secrets
-
+# Quality gates
+python -m  qa check
+```
 
 ## Documentation
 
-- **API Docs**: Manual maintenance
-- **User Guides**: Comprehensive setup and usage instructions
-- **Contributing**: Development workflow and standards
+📚 **[Full Documentation](docs/)**
 
-## Support
+- **[Getting Started](docs/getting-started/)** - Installation and setup
+- **[User Guide](docs/user-guide/)** - Usage and configuration
+- **[Developer Guide](docs/developer/)** - Architecture and contributing
+- **[Agent Documentation](docs/agents/)** - Agent workflows and integration
 
-- **Issues**: Use GitHub issues with appropriate labels
-- **Discussions**: Technical discussions and Q&A
-- **Documentation**: Comprehensive guides in `/docs`
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Develop with agent assistance
+4. Run quality checks
+5. Submit a pull request
 
 ## License
 
 
-See LICENSE file for details.
+
+## Generated By
+
+This project was generated using the [agentic-dev-boilerplate](https://github.com/tzervas/agentic-dev-boilerplate) template system.

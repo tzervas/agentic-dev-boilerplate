@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup uv and Python environment for agentic-dev-boilerplate
+Setup uv and Python environment for test-bootdisk-project
 
 This script installs uv and sets up the Python virtual environment.
 """
@@ -73,7 +73,7 @@ def setup_venv():
         return True
 
 def main():
-    print("🚀 Setting up agentic-dev-boilerplate development environment...")
+    print("🚀 Setting up test-bootdisk-project development environment...")
 
     # Install uv
     if not install_uv():

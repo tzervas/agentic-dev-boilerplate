@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Git Repository Setup Helper for agentic-dev-boilerplate
+Git Repository Setup Helper for test-bootdisk-project
 
 Ensures all branches have proper upstream tracking and provides
 utilities for repository management.

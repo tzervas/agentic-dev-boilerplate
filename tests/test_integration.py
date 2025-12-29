@@ -12,47 +12,68 @@ import json
 def sample_project_schema(tmp_path):
     """Create a complete sample project schema for integration testing."""
     schema = {
-        "project": "integration_test_project",
-        "version": "1.0.0",
-        "description": "Test project for integration testing",
-        "languages": ["python"],
-        "frameworks": ["pytest", "black"],
+        "project": {
+            "name": "integration_test_project",
+            "description": "Test project for integration testing",
+            "repository": "https://github.com/test/integration_test_project",
+            "private": False,
+            "version": "1.0.0"
+        },
+        "languages": [
+            {
+                "name": "python",
+                "version": "3.11",
+                "frameworks": ["pytest", "black"],
+                "package_manager": "uv",
+                "testing": ["pytest"],
+                "linting": ["black", "isort"],
+                "type_checking": ["mypy"]
+            }
+        ],
         "agents": [
             {
                 "role": "planner",
                 "enabled": True,
-                "capabilities": ["task_decomposition", "priority_assessment"],
-                "model": "gpt-4"
+                "scope": ["task_decomposition", "priority_assessment"]
             },
             {
                 "role": "tester",
                 "enabled": True,
-                "capabilities": ["unit_testing", "integration_testing"],
-                "model": "gpt-3.5-turbo"
+                "scope": ["unit_testing", "integration_testing"]
             },
             {
                 "role": "debugger",
                 "enabled": False,
-                "capabilities": ["error_analysis", "fix_suggestions"],
-                "model": "gpt-4"
+                "scope": ["error_analysis", "fix_suggestions"]
             }
         ],
-        "workflows": [
-            {
-                "name": "development",
-                "description": "Standard development workflow",
-                "stages": ["plan", "implement", "test", "deploy"]
-            },
-            {
-                "name": "hotfix",
-                "description": "Quick fix workflow",
-                "stages": ["analyze", "fix", "test"]
-            }
-        ],
-        "quality_gates": {
-            "test_coverage": 80,
-            "linting": True,
-            "type_checking": True
+        "workflows": {
+            "pr_automation": True,
+            "task_tracking": True,
+            "commit_signing": True,
+            "ci_cd": True,
+            "gitops": False,
+            "security_scanning": True,
+            "dependency_management": True,
+            "multi_agent_coordination": True
+        },
+        "git": {
+            "default_branch": "main",
+            "commit_signing": True
+        },
+        "ci_cd": {
+            "provider": "github_actions"
+        },
+        "validation": {
+            "code_coverage_minimum": 80
+        },
+        "security": {
+            "gpg_signing": True
+        },
+        "documentation": {
+            "readme_generation": True,
+            "contributing_guide": True,
+            "changelog": True
         }
     }
     schema_file = tmp_path / "project_schema.yaml"

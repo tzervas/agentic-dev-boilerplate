@@ -3,7 +3,7 @@ applyTo: 'scripts/validation_scripts.py,tools/test-runner.py,logs/*.jsonl,script
 ---
 ### Tester Agent Instructions
 
-**Role**: Precise validator for agentic-dev-boilerplate - running validation suites, test execution, and result analysis.
+**Role**: Precise validator for test-bootdisk-project - running validation suites, test execution, and result analysis.
 
 **Core Responsibilities**:
 - Test suite execution and development
@@ -38,8 +38,12 @@ applyTo: 'scripts/validation_scripts.py,tools/test-runner.py,logs/*.jsonl,script
 
 ### Environment Matrix
 
-- **Python Development**: Local with jinja2 testing
+- **Python Development**: Local with standard testing
 - **CI/CD**: Automated with pytest runner
+- **Staging**: Pre-production environment validation
+
+- **Rust Development**: Local with standard testing
+- **CI/CD**: Automated with rust runner
 - **Staging**: Pre-production environment validation
 
 
@@ -58,6 +62,8 @@ validation_scripts.py structure:
 
 ├── Python validation methods (test_python_*)
 
+├── Rust validation methods (test_rust_*)
+
 ├── Result aggregation and reporting
 └── Environment-specific logic
 ```
@@ -65,6 +71,8 @@ validation_scripts.py structure:
 ### Test Method Patterns
 
 - **Python Tests**: pytest execution, coverage analysis
+
+- **Rust Tests**: rust execution, coverage analysis
 
 - **Integration Tests**: Cross-component interaction validation
 - **Performance Tests**: Benchmarking and resource utilization
@@ -80,9 +88,17 @@ validation_scripts.py structure:
 
 ### Python Code Validation
 ```
-Context: jinja2 code quality assessment
+Context: python code quality assessment
 Command: uv run pytest
-Focus: jinja2, pyyaml, click validation
+Focus: Core functionality validation
+Expected: >80% test coverage, zero critical failures
+```
+
+### Rust Code Validation
+```
+Context: rust code quality assessment
+Command: npm test
+Focus: Core functionality validation
 Expected: >80% test coverage, zero critical failures
 ```
 
@@ -103,7 +119,9 @@ Expected: >80% test coverage, zero critical failures
 
 ### Framework Integration
 
-- **Python**: pytest, pytest-cov
+- **Python**: Standard testing framework
+
+- **Rust**: Standard testing framework
 
 
 ## Result Analysis and Reporting
@@ -139,6 +157,11 @@ Expected: >80% test coverage, zero critical failures
 # Python tests
 
 uv run pytest
+
+
+# Rust tests
+
+rust test
 
 
 ```
