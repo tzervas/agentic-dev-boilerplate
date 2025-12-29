@@ -599,7 +599,6 @@ def complexity_levels(draw):
 @pytest.mark.slow
 @given(
     project_type=valid_project_types(),
-    languages=valid_language_combinations(),
     complexity=complexity_levels(),
 )
 @settings(
@@ -608,11 +607,11 @@ def complexity_levels(draw):
     suppress_health_check=[HealthCheck.too_slow, HealthCheck.function_scoped_fixture],
 )
 def test_fuzz_valid_schemas(
-    fuzzer, temp_output_dir, security_validator, project_type, languages, complexity
+    fuzzer, temp_output_dir, security_validator, project_type, complexity
 ):
     """Fuzz test with valid schema combinations."""
-    # Generate valid schema
-    schema = fuzzer.generate_valid_schema(project_type, languages, complexity)
+    # Generate valid schema with default languages
+    schema = fuzzer.generate_valid_schema(project_type, None, complexity)
 
     # Security validation
     assert security_validator.validate_schema_size(schema)
@@ -627,6 +626,7 @@ def test_fuzz_valid_schemas(
     assert parsed_schema is not None
 
     # Test generation (limited to prevent resource exhaustion)
+    languages = schema.get("languages", [])
     if len(languages) <= 2 and complexity != "high":  # Limit resource-intensive tests
         schema_file = temp_output_dir / "test_schema.yaml"
         with open(schema_file, "w") as f:

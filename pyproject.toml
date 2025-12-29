@@ -1,170 +1,47 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentic-dev-boilerplate"
-version = "1.1.4"
-description = "Templatized repository for generating agentic development workflows and automations"
+version = "0.1.0"
+description = "Agentic development framework with devcontainer and package management"
 readme = "README.md"
 requires-python = ">=3.11"
-
-authors = [
-    {name = "Your Name", email = "your.email@example.com"},
-]
-maintainers = [
-    {name = "Your Name", email = "your.email@example.com"},
-]
-keywords = ["python"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Utilities",
-]
-
 dependencies = [
-    "jinja2==3.1.6",
-    "pyyaml==6.0.3",
-    "click==8.3.1",
-    "pytest==9.0.2",
-    "pytest-cov==7.0.0",
-    "black==25.12.0",
-    "isort==7.0.0",
-    "flake8==7.3.0",
-    "mypy==1.19.1",
+    "pyyaml>=6.0",
+    "jinja2>=3.1.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "questionary>=2.0.0",
+    "cryptography>=41.0.0",
 ]
-
-[project.scripts]
-agentic-dev-boilerplate = "agentic_dev_boilerplate.generate_boilerplate:main"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/agentic_dev_boilerplate"]
-include = ["templates/**/*"]
 
 [project.optional-dependencies]
 dev = [
-
-
-
-    "pytest",
-
-    "pytest-cov",
-
-
-    "black",
-
-    "isort",
-
-    "flake8",
-
-
-    "mypy",
-
-
-
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
 ]
 docs = [
-    "sphinx==7.4.7",
-    "sphinx-rtd-theme==3.0.2",
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.2.0",
 ]
 
-[project.urls]
-Homepage = "https://github.com/tzervas/agentic-dev-boilerplate"
-Repository = "https://github.com/tzervas/agentic-dev-boilerplate"
+[project.scripts]
+agentic-dev = "install_arch.cli:cli"
 
-Changelog = "https://github.com/tzervas/agentic-dev-boilerplate/blob/main/CHANGELOG.md"
-
-
-Contributing = "https://github.com/tzervas/agentic-dev-boilerplate/blob/main/CONTRIBUTING.md"
-
-
-[tool.black]
-line-length = 88
-target-version = ['py311']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-line_length = 88
-known_first_party = ["agentic-dev-boilerplate"]
-skip = ["__init__.py"]
-
-[tool.mypy]
-python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
-
-[[tool.mypy.overrides]]
-module = [
-    "tests.*",
-]
-ignore_errors = true
-
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-ra -q --strict-markers --strict-config"
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-]
-testpaths = [
-    "tests",
-]
-
-[tool.coverage.run]
-source = ["agentic-dev-boilerplate"]
-omit = [
-    "tests/*",
-    "*/venv/*",
-    "*/.venv/*",
-]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
-]
-
-[dependency-groups]
-dev = [
-    "pre-commit>=4.5.1",
-    "pytest>=9.0.2",
-    "pytest-xdist>=3.5.0",
-    "hypothesis>=6.80.0",
-    "twine>=6.2.0",
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
 ]
