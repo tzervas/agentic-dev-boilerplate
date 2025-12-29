@@ -15,6 +15,11 @@ import click
 import yaml
 from jinja2 import Environment, FileSystemLoader
 
+try:
+    from chngbrgr import ChangelogGenerator
+except ImportError:
+    ChangelogGenerator = None
+
 
 class BoilerplateGenerator:
     def __init__(
@@ -441,7 +446,16 @@ echo "✅ Commit is properly signed"
                 )
 
         if docs_config.get("changelog"):
-            changelog_content = f"""# Changelog
+            if ChangelogGenerator:
+                generator = ChangelogGenerator(self.schema["project"]["name"])
+                changelog_content = generator.generate_initial_changelog(
+                    self.schema["project"].get("repository")
+                )
+                output_path = self.output_dir / "CHANGELOG.md"
+                generator.write_changelog(changelog_content, output_path)
+            else:
+                # Fallback to inline generation if chngbrgr not available
+                changelog_content = f"""# Changelog
 
 All notable changes to {self.schema['project']['name']} will be documented in this file.
 
@@ -473,9 +487,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - N/A
 """
 
-            output_path = self.output_dir / "CHANGELOG.md"
-            with open(output_path, "w") as f:
-                f.write(changelog_content)
+                output_path = self.output_dir / "CHANGELOG.md"
+                with open(output_path, "w") as f:
+                    f.write(changelog_content)
 
 
 @click.command()
