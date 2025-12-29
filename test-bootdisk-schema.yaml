@@ -55,14 +55,6 @@ quality_gates:
 
 ai_ml_support: true
 
-documentation:
-  readme_generation: true
-  api_docs: false
-  changelog: true
-  contributing_guide: true
-  code_of_conduct: true
-
-
 ci_cd:
   provider: "github_actions"
   phases:

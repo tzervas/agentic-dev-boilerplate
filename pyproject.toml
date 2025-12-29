@@ -157,5 +157,7 @@ exclude_lines = [
 
 [dependency-groups]
 dev = [
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
     "twine>=6.2.0",
 ]

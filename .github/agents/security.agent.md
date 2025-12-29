@@ -3,7 +3,13 @@ name: security
 description: Handles security configurations, audits, and hardening for AI agent systems
 model: gpt-4
 tools: security-scanner, vulnerability-assessor, compliance-checker
-handoffs: evaluator, testing
+handoffs:
+  - label: Code evaluation
+    agent: evaluator
+    prompt: Evaluate the security implementation for best practices
+  - label: Security testing
+    agent: testing
+    prompt: Run security-focused tests and vulnerability scans
 ---
 
 # Security Agent

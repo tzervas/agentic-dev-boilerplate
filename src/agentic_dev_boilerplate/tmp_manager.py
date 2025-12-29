@@ -6,25 +6,28 @@ Provides structured, secure, and automatically pruned temporary directory manage
 for task and subtask level context in agentic workflows.
 """
 
+import hashlib
+import logging
 import os
 import shutil
 import time
-import hashlib
-from pathlib import Path
-from typing import Optional, Dict, Any
 from dataclasses import dataclass
+from pathlib import Path
 from threading import Lock
-import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class TmpConfig:
     """Configuration for temporary directory management."""
+
     base_tmp_dir: Path = Path("/tmp/agentic_projects")
     max_age_hours: int = 1  # Prune directories older than this
     prune_interval_minutes: int = 30  # How often to run pruning
     max_project_dirs: int = 100  # Maximum number of project directories to keep
+
 
 class TmpManager:
     """
@@ -73,7 +76,8 @@ class TmpManager:
         task_dir = self.get_task_dir(task_id)
         context_file = task_dir / "context.json"
         import json
-        with open(context_file, 'w') as f:
+
+        with open(context_file, "w") as f:
             json.dump(context, f, indent=2)
         return context_file
 
@@ -82,26 +86,31 @@ class TmpManager:
         context_file = self.get_task_dir(task_id) / "context.json"
         if context_file.exists():
             import json
+
             try:
-                with open(context_file, 'r') as f:
+                with open(context_file, "r") as f:
                     return json.load(f)
             except (json.JSONDecodeError, ValueError):
                 return None
         return None
 
-    def write_subtask_data(self, task_id: str, subtask_id: str, filename: str, data: bytes) -> Path:
+    def write_subtask_data(
+        self, task_id: str, subtask_id: str, filename: str, data: bytes
+    ) -> Path:
         """Write binary data for a subtask."""
         subtask_dir = self.get_subtask_dir(task_id, subtask_id)
         file_path = subtask_dir / filename
-        with open(file_path, 'wb') as f:
+        with open(file_path, "wb") as f:
             f.write(data)
         return file_path
 
-    def read_subtask_data(self, task_id: str, subtask_id: str, filename: str) -> Optional[bytes]:
+    def read_subtask_data(
+        self, task_id: str, subtask_id: str, filename: str
+    ) -> Optional[bytes]:
         """Read binary data for a subtask."""
         file_path = self.get_subtask_dir(task_id, subtask_id) / filename
         if file_path.exists():
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 return f.read()
         return None
 
@@ -123,7 +132,10 @@ class TmpManager:
         """Prune old temporary directories across all projects."""
         with self._lock:
             current_time = time.time()
-            if current_time - self._last_prune < self.config.prune_interval_minutes * 60:
+            if (
+                current_time - self._last_prune
+                < self.config.prune_interval_minutes * 60
+            ):
                 return  # Not time to prune yet
 
             self._last_prune = current_time
@@ -146,13 +158,17 @@ class TmpManager:
 
             # Also limit total number of project directories
             project_dirs = sorted(
-                [d for d in self.config.base_tmp_dir.iterdir() if d.is_dir() and d != self.project_tmp_dir],
-                key=lambda d: d.stat().st_mtime
+                [
+                    d
+                    for d in self.config.base_tmp_dir.iterdir()
+                    if d.is_dir() and d != self.project_tmp_dir
+                ],
+                key=lambda d: d.stat().st_mtime,
             )
 
             num_to_keep = self.config.max_project_dirs - 1
             if len(project_dirs) > num_to_keep:
-                to_remove = project_dirs[:len(project_dirs) - num_to_keep]
+                to_remove = project_dirs[: len(project_dirs) - num_to_keep]
                 for old_dir in to_remove:
                     try:
                         shutil.rmtree(old_dir)
@@ -187,13 +203,21 @@ class TmpManager:
             "total_size_bytes": total_size,
             "file_count": file_count,
             "dir_count": dir_count,
-            "last_modified": self.project_tmp_dir.stat().st_mtime if self.project_tmp_dir.exists() else None
+            "last_modified": (
+                self.project_tmp_dir.stat().st_mtime
+                if self.project_tmp_dir.exists()
+                else None
+            ),
         }
+
 
 # Global instance for convenience
 _default_managers: Dict[str, TmpManager] = {}
 
-def get_tmp_manager(project_name: str, config: Optional[TmpConfig] = None) -> TmpManager:
+
+def get_tmp_manager(
+    project_name: str, config: Optional[TmpConfig] = None
+) -> TmpManager:
     """Get or create a TmpManager instance for a project."""
     if project_name not in _default_managers:
         _default_managers[project_name] = TmpManager(project_name, config)

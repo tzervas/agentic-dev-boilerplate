@@ -4,6 +4,21 @@ All notable changes to agentic-dev-boilerplate will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.1.3] - 2025-12-29
+
+### Added
+- Optimized GitHub Copilot customizations for agentic development workflows
+- Added specialized instructions for Python, Rust agents, and APIs
+- Created prompts for agent architecture design, API security, and testing framework
+- Aligned agent schemas with extracted patterns from install-arch project
+- Enhanced security posture and code quality guidelines
+
+### Fixed
+- Corrected syntax error in generate_boilerplate.py (duplicate main() call)
+- Added missing newline at end of file
+- Updated agent handoff schemas to structured format
+
+
 
 ## [1.1.2] - 2025-12-27
 

@@ -92,7 +92,7 @@ project:
 agents:
   enabled: [swe, test_engineer, project_manager, qa_evaluator, communicator, devops, security, documentation]
 
-languages: 
+languages:
 
 workflows:
   - development

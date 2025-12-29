@@ -2,7 +2,7 @@
 
 A comprehensive template system for generating agentic development workflows and automation infrastructure.
 
-**Version**: 1.1.1  
+**Version**: 1.1.1
 **Repository**: https://github.com/tzervas/agentic-dev-boilerplate
 
 ## Overview

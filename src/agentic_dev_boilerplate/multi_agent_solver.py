@@ -6,17 +6,17 @@ Coordinates multiple specialized agents to collaboratively solve complex problem
 through orchestrated teamwork, cross-validation, and consensus building.
 """
 
-import os
-import sys
-import json
-import time
 import asyncio
+import json
+import logging
+import os
 import subprocess
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Callable
+import sys
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import logging
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
 
 # Add the project root to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -24,8 +24,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from .tmp_manager import TmpManager, get_tmp_manager
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 class AgentRole(Enum):
     PLANNER = "planner"
@@ -36,12 +39,14 @@ class AgentRole(Enum):
     DEVOPS_SPECIALIST = "devops_specialist"
     ORCHESTRATOR = "orchestrator"
 
+
 class TaskStatus(Enum):
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     FAILED = "failed"
     BLOCKED = "blocked"
+
 
 class MessageType(Enum):
     TASK_ASSIGNMENT = "task_assignment"
@@ -51,9 +56,11 @@ class MessageType(Enum):
     ESCALATION = "escalation"
     SOLUTION_PROPOSAL = "solution_proposal"
 
+
 @dataclass
 class AgentMessage:
     """Message structure for inter-agent communication."""
+
     sender: AgentRole
     recipient: AgentRole
     message_type: MessageType
@@ -61,9 +68,11 @@ class AgentMessage:
     timestamp: float = field(default_factory=time.time)
     message_id: str = field(default_factory=lambda: f"msg_{int(time.time() * 1000)}")
 
+
 @dataclass
 class Task:
     """Represents a task in the multi-agent workflow."""
+
     task_id: str
     description: str
     assigned_agent: AgentRole
@@ -73,9 +82,11 @@ class Task:
     created_at: float = field(default_factory=time.time)
     completed_at: Optional[float] = None
 
+
 @dataclass
 class MultiAgentSession:
     """Manages a multi-agent problem-solving session."""
+
     session_id: str
     problem_description: str
     participating_agents: List[AgentRole]
@@ -84,6 +95,7 @@ class MultiAgentSession:
     consensus_threshold: float = 0.8  # Percentage of agents needed for consensus
     created_at: float = field(default_factory=time.time)
     completed_at: Optional[float] = None
+
 
 class AgentCoordinator:
     """Coordinates communication and task assignment between agents."""
@@ -105,7 +117,7 @@ class AgentCoordinator:
                 try:
                     role = AgentRole(agent_name)
                     # Parse capabilities from instruction file
-                    with open(instruction_file, 'r') as f:
+                    with open(instruction_file, "r") as f:
                         content = f.read()
                         # Extract responsibilities from the file
                         capabilities[role] = self._extract_capabilities(content)
@@ -117,7 +129,7 @@ class AgentCoordinator:
     def _extract_capabilities(self, content: str) -> List[str]:
         """Extract agent capabilities from instruction content."""
         capabilities = []
-        lines = content.split('\n')
+        lines = content.split("\n")
         in_responsibilities = False
 
         for line in lines:
@@ -131,16 +143,20 @@ class AgentCoordinator:
 
         return capabilities
 
-    def create_session(self, problem_description: str, required_agents: List[AgentRole]) -> str:
+    def create_session(
+        self, problem_description: str, required_agents: List[AgentRole]
+    ) -> str:
         """Create a new multi-agent problem-solving session."""
         session_id = f"session_{int(time.time() * 1000)}"
         session = MultiAgentSession(
             session_id=session_id,
             problem_description=problem_description,
-            participating_agents=required_agents
+            participating_agents=required_agents,
         )
         self.active_sessions[session_id] = session
-        logger.info(f"Created multi-agent session {session_id} with agents: {[a.value for a in required_agents]}")
+        logger.info(
+            f"Created multi-agent session {session_id} with agents: {[a.value for a in required_agents]}"
+        )
         return session_id
 
     def decompose_problem(self, session_id: str) -> List[Task]:
@@ -150,17 +166,21 @@ class AgentCoordinator:
             raise ValueError(f"Session {session_id} not found")
 
         # Use planner agent to decompose the problem
-        tasks = self._call_planner_agent(session.problem_description, session.participating_agents)
+        tasks = self._call_planner_agent(
+            session.problem_description, session.participating_agents
+        )
 
         # Create task objects
         task_objects = []
         for i, task_desc in enumerate(tasks):
             # Assign task to most appropriate agent
-            assigned_agent = self._assign_task_to_agent(task_desc, session.participating_agents)
+            assigned_agent = self._assign_task_to_agent(
+                task_desc, session.participating_agents
+            )
             task = Task(
                 task_id=f"{session_id}_task_{i}",
                 description=task_desc,
-                assigned_agent=assigned_agent
+                assigned_agent=assigned_agent,
             )
             task_objects.append(task)
 
@@ -174,10 +194,12 @@ class AgentCoordinator:
         return [
             f"Analyze {problem} from {agents[0].value} perspective",
             f"Validate solution components",
-            f"Integrate and test final solution"
+            f"Integrate and test final solution",
         ]
 
-    def _assign_task_to_agent(self, task_desc: str, available_agents: List[AgentRole]) -> AgentRole:
+    def _assign_task_to_agent(
+        self, task_desc: str, available_agents: List[AgentRole]
+    ) -> AgentRole:
         """Assign a task to the most appropriate agent."""
         # Simple assignment logic - in practice, this would be more sophisticated
         task_lower = task_desc.lower()
@@ -204,7 +226,9 @@ class AgentCoordinator:
         # Execute tasks (in practice, this would coordinate actual agent execution)
         results = {}
         for task in session.tasks:
-            logger.info(f"Executing task {task.task_id} with agent {task.assigned_agent.value}")
+            logger.info(
+                f"Executing task {task.task_id} with agent {task.assigned_agent.value}"
+            )
             task.status = TaskStatus.IN_PROGRESS
 
             # Simulate agent execution
@@ -223,7 +247,7 @@ class AgentCoordinator:
             "session_id": session_id,
             "results": results,
             "consensus": consensus,
-            "completed_at": session.completed_at
+            "completed_at": session.completed_at,
         }
 
     def _execute_agent_task(self, task: Task) -> Dict[str, Any]:
@@ -237,13 +261,17 @@ class AgentCoordinator:
             "task": task.description,
             "result": f"Completed {task.description}",
             "confidence": 0.9,
-            "timestamp": time.time()
+            "timestamp": time.time(),
         }
 
-    def _build_consensus(self, session: MultiAgentSession, results: Dict[str, Any]) -> Dict[str, Any]:
+    def _build_consensus(
+        self, session: MultiAgentSession, results: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Build consensus from agent results."""
         # Simple consensus building - in practice, this would be more sophisticated
-        total_confidence = sum(result.get("confidence", 0) for result in results.values())
+        total_confidence = sum(
+            result.get("confidence", 0) for result in results.values()
+        )
         avg_confidence = total_confidence / len(results) if results else 0
 
         consensus_reached = avg_confidence >= session.consensus_threshold
@@ -252,7 +280,11 @@ class AgentCoordinator:
             "consensus_reached": consensus_reached,
             "average_confidence": avg_confidence,
             "participant_count": len(session.participating_agents),
-            "recommendation": "Proceed with solution" if consensus_reached else "Require additional review"
+            "recommendation": (
+                "Proceed with solution"
+                if consensus_reached
+                else "Require additional review"
+            ),
         }
 
     def send_message(self, message: AgentMessage) -> None:
@@ -260,30 +292,51 @@ class AgentCoordinator:
         session = self._find_session_for_agents(message.sender, message.recipient)
         if session:
             session.messages.append(message)
-            logger.info(f"Message {message.message_id} sent from {message.sender.value} to {message.recipient.value}")
+            logger.info(
+                f"Message {message.message_id} sent from {message.sender.value} to {message.recipient.value}"
+            )
 
-    def _find_session_for_agents(self, agent1: AgentRole, agent2: AgentRole) -> Optional[MultiAgentSession]:
+    def _find_session_for_agents(
+        self, agent1: AgentRole, agent2: AgentRole
+    ) -> Optional[MultiAgentSession]:
         """Find a session that includes both agents."""
         for session in self.active_sessions.values():
-            if agent1 in session.participating_agents and agent2 in session.participating_agents:
+            if (
+                agent1 in session.participating_agents
+                and agent2 in session.participating_agents
+            ):
                 return session
         return None
+
 
 def main():
     """Main entry point for the multi-agent solver."""
     import argparse
 
     parser = argparse.ArgumentParser(description="Multi-Agent Problem Solver")
-    parser.add_argument("--workspace", "-w", type=Path, default=Path.cwd(),
-                       help="Workspace root directory")
-    parser.add_argument("--problem", "-p", required=True,
-                       help="Problem description")
-    parser.add_argument("--agents", "-a", nargs="+",
-                       choices=[role.value for role in AgentRole],
-                       default=[role.value for role in AgentRole],
-                       help="Participating agents")
-    parser.add_argument("--consensus-threshold", "-t", type=float, default=0.8,
-                       help="Consensus threshold (0.0-1.0)")
+    parser.add_argument(
+        "--workspace",
+        "-w",
+        type=Path,
+        default=Path.cwd(),
+        help="Workspace root directory",
+    )
+    parser.add_argument("--problem", "-p", required=True, help="Problem description")
+    parser.add_argument(
+        "--agents",
+        "-a",
+        nargs="+",
+        choices=[role.value for role in AgentRole],
+        default=[role.value for role in AgentRole],
+        help="Participating agents",
+    )
+    parser.add_argument(
+        "--consensus-threshold",
+        "-t",
+        type=float,
+        default=0.8,
+        help="Consensus threshold (0.0-1.0)",
+    )
 
     args = parser.parse_args()
 
@@ -304,8 +357,11 @@ def main():
     # Execute the session
     result = coordinator.execute_session(session_id)
 
-    print(f"\nSession completed. Consensus reached: {result['consensus']['consensus_reached']}")
+    print(
+        f"\nSession completed. Consensus reached: {result['consensus']['consensus_reached']}"
+    )
     print(f"Average confidence: {result['consensus']['average_confidence']:.2f}")
+
 
 if __name__ == "__main__":
     main()

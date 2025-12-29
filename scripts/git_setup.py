@@ -6,72 +6,113 @@ Ensures all branches have proper upstream tracking and provides
 utilities for repository management.
 """
 
+import os
 import subprocess
 import sys
-import os
 from pathlib import Path
+
 
 def run_command(cmd, capture_output=True):
     """Run a shell command and return the result."""
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=capture_output, text=True)
+        result = subprocess.run(
+            cmd, shell=True, capture_output=capture_output, text=True
+        )
         return result.returncode == 0, result.stdout.strip() if capture_output else None
     except Exception as e:
         print(f"Error running command: {e}")
         return False, None
 
+
 def get_local_branches():
     """Get all local branches."""
     success, output = run_command("git branch --format='%(refname:short)'")
     if success:
-        return [line.strip() for line in output.split('\n') if line.strip()]
+        return [line.strip() for line in output.split("\n") if line.strip()]
     return []
+
 
 def get_remote_branches():
     """Get all remote branches."""
     success, output = run_command("git branch -r --format='%(refname:short)'")
     if success:
-        return [line.replace('origin/', '') for line in output.split('\n') if line.strip()]
+        return [
+            line.replace("origin/", "") for line in output.split("\n") if line.strip()
+        ]
     return []
+
 
 def get_tracking_branches():
     """Get branches that have upstream tracking."""
-    success, output = run_command("git branch -vv --format='%(refname:short) %(upstream:short)'")
+    success, output = run_command(
+        "git branch -vv --format='%(refname:short) %(upstream:short)'"
+    )
     if success:
         tracking = {}
-        for line in output.split('\n'):
+        for line in output.split("\n"):
             if line.strip():
                 parts = line.split()
                 if len(parts) >= 2:
                     local_branch = parts[0]
                     upstream = parts[1]
-                    if upstream.startswith('origin/'):
+                    if upstream.startswith("origin/"):
                         tracking[local_branch] = upstream
         return tracking
     return {}
+
+
+def get_current_branch():
+    """Get the current branch name."""
+    success, output = run_command("git branch --show-current")
+    if success:
+        return output.strip()
+    return None
+
 
 def setup_upstream_tracking():
     """Set up upstream tracking for branches that need it."""
     local_branches = get_local_branches()
     remote_branches = get_remote_branches()
     tracking_branches = get_tracking_branches()
+    current_branch = get_current_branch()
 
     print("🔍 Checking branch upstream tracking...")
 
+    # First, ensure current branch has upstream if possible
+    if (
+        current_branch
+        and current_branch not in tracking_branches
+        and current_branch in remote_branches
+    ):
+        print(f"📡 Setting up upstream for current branch {current_branch}")
+        success, _ = run_command(
+            f"git branch --set-upstream-to=origin/{current_branch} {current_branch}"
+        )
+        if success:
+            print(f"✅ {current_branch} now tracks origin/{current_branch}")
+            tracking_branches[current_branch] = (
+                f"origin/{current_branch}"  # Update local tracking
+            )
+        else:
+            print(f"❌ Failed to set upstream for {current_branch}")
+
     for branch in local_branches:
-        if branch == 'main':
-            continue  # main/master should already be set up
+        if branch == "main" or branch == current_branch:
+            continue  # main/master and current should already be set up
 
         if branch not in tracking_branches:
             if branch in remote_branches:
                 print(f"📡 Setting up upstream for {branch}")
-                success, _ = run_command(f"git branch --set-upstream-to=origin/{branch} {branch}")
+                success, _ = run_command(
+                    f"git branch --set-upstream-to=origin/{branch} {branch}"
+                )
                 if success:
                     print(f"✅ {branch} now tracks origin/{branch}")
                 else:
                     print(f"❌ Failed to set upstream for {branch}")
             else:
                 print(f"⚠️  {branch} has no remote counterpart")
+
 
 def check_repository_status():
     """Check overall repository status."""
@@ -99,30 +140,30 @@ def check_repository_status():
 
     # Check pull rebase
     success, pull_rebase = run_command("git config pull.rebase")
-    if success and pull_rebase.strip() == 'true':
+    if success and pull_rebase.strip() == "true":
         print("✅ Pull rebase enabled")
     else:
         print("ℹ️  Pull rebase not enabled")
 
-
     # Check commit signing
     success, gpg_sign = run_command("git config commit.gpgsign")
-    if success and gpg_sign.strip() == 'true':
+    if success and gpg_sign.strip() == "true":
         print("✅ Commit signing enabled")
     else:
         print("⚠️  Commit signing not enabled")
 
-
     return True
 
+
 def main():
-    if len(sys.argv) > 1 and sys.argv[1] == '--setup':
+    if len(sys.argv) > 1 and sys.argv[1] == "--setup":
         print("🔧 Setting up repository configuration...")
         setup_upstream_tracking()
         print("✅ Repository setup complete!")
     else:
         check_repository_status()
         print("\n💡 Run with --setup to configure upstream tracking for all branches")
+
 
 if __name__ == "__main__":
     main()

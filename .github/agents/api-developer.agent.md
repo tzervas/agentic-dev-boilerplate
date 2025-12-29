@@ -3,7 +3,16 @@ name: api-developer
 description: Handles API design, implementation, and integration for AI agent systems
 model: gpt-4
 tools: api-designer, code-generator, integration-tester
-handoffs: security, testing, documentation
+handoffs:
+  - label: Security review
+    agent: security
+    prompt: Review the API implementation for security vulnerabilities
+  - label: Testing
+    agent: testing
+    prompt: Run integration and unit tests for the API
+  - label: Documentation
+    agent: documentation
+    prompt: Generate API documentation and guides
 ---
 
 # API Developer Agent

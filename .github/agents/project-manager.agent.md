@@ -3,7 +3,16 @@ name: project-manager
 description: Manages project planning, tracking, and milestone achievement for AI agent development projects
 model: gpt-4
 tools: github-projects, issue-tracker, milestone-manager
-handoffs: evaluator, testing, documentation
+handoffs:
+  - label: Evaluate code quality
+    agent: evaluator
+    prompt: Please evaluate the code quality and provide feedback
+  - label: Run tests
+    agent: testing
+    prompt: Execute comprehensive tests for the changes
+  - label: Update documentation
+    agent: documentation
+    prompt: Update project documentation with the latest changes
 ---
 
 # Project Manager Agent

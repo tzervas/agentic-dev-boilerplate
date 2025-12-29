@@ -53,7 +53,7 @@ applyTo: 'tasking/tracker.yaml,tasking/context/*.md,tasking/plan.md'
 ### Python Jinja2, Pyyaml, Click Tasks
 ```
 Pattern: "Extend python implementation for jinja2"
-→ Decompose: Planner (task-decomposition) + Tester (validation-suites) + Debugger (root-cause-analysis) + Deployer (production-deployment) + Systems-Engineer (hardware-emulation) + Devops-Specialist (infrastructure-automation) + Orchestrator (multi-agent-coordination) 
+→ Decompose: Planner (task-decomposition) + Tester (validation-suites) + Debugger (root-cause-analysis) + Deployer (production-deployment) + Systems-Engineer (hardware-emulation) + Devops-Specialist (infrastructure-automation) + Orchestrator (multi-agent-coordination)
 → Context: src/jinja2/*.py, src/pyyaml/*.py, src/click/*.py
 → Validation: Tester (python testing and validation)
 

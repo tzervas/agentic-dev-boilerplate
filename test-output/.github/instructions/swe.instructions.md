@@ -65,7 +65,7 @@ applyTo: 'src/**/*.py,src/**/*.js,src/**/*.ts,src/**/*.java,src/**/*.cpp,src/**/
 ```
 Pattern: "Implement core feature for test-bootdisk-project"
 → Design: Software Engineer (architecture and design)
-→ Implement: 
+→ Implement:
 → Test: Tester (python validation)
 → Deploy: Deployer (production deployment)
 
@@ -73,7 +73,7 @@ Pattern: "Implement core feature for test-bootdisk-project"
 ```
 Pattern: "Implement core feature for test-bootdisk-project"
 → Design: Software Engineer (architecture and design)
-→ Implement: 
+→ Implement:
 → Test: Tester (rust validation)
 → Deploy: Deployer (production deployment)
 
