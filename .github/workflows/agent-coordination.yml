@@ -21,7 +21,7 @@ on:
 
 jobs:
   coordinate-agents:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, podman]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -150,7 +150,7 @@ jobs:
 
   validate-solution:
     needs: coordinate-agents
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, podman]
     if: success()
     steps:
       - name: Checkout code

@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   pr-enrichment:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, podman]
     if: github.event.pull_request.draft == false
     steps:
       - name: Checkout code
@@ -34,7 +34,7 @@ jobs:
           python .github/scripts/pr_enrichment.py
 
   validate-pr-content:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, podman]
     if: github.event.pull_request.draft == false
     steps:
       - name: Checkout code
@@ -64,7 +64,7 @@ jobs:
 
 
   validate-commit-signing:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, podman]
     if: github.event.pull_request.draft == false
     steps:
       - name: Checkout code
