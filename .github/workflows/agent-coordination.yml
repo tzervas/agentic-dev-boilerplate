@@ -1,10 +1,7 @@
 name: Multi-Agent Coordination
 
+# Manual only — no push/pull_request CI triggers
 on:
-  issues:
-    types: [opened, labeled]
-  pull_request:
-    types: [opened, labeled]
   workflow_dispatch:
     inputs:
       problem_description:

@@ -1,11 +1,8 @@
 name: PR Automation
 
+# Manual only — no push/pull_request CI triggers
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-  pull_request_review:
-    types: [submitted]
-
+  workflow_dispatch:
 jobs:
   pr-enrichment:
     runs-on: ubuntu-latest
