@@ -1,11 +1,6 @@
 # Fleet standards (tzervas)
 
-Applied from the workstation pack under `plans/fleet-standards/pack/`
-(vendored copy for generators: `pack/fleet-standards/` in this repo).
-
-**New projects:** prefer [tz-forge](https://github.com/tzervas/tz-forge) `tz-new`,
-which composes the fleet module by project kind. This generator can still inject
-the same workflows via `--fleet-pack` when it emits CI.
+Applied from the workstation pack under `plans/fleet-standards/pack/`.
 
 ## Workflows
 

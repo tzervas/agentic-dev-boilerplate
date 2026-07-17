@@ -47,8 +47,18 @@ agentic-dev-boilerplate = "agentic_dev_boilerplate.generate_boilerplate:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentic_dev_boilerplate"]
-include = ["templates/**/*"]
+# Non-Python fleet pack (workflows/docs) ships under the package as fleet_pack/
 
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/agentic_dev_boilerplate",
+  "templates",
+  "pack",
+  "README.md",
+  "LICENSE",
+  "AGENTS.md",
+  "project-schema.yaml",
+]
 [project.optional-dependencies]
 dev = [
 

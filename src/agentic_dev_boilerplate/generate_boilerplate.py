@@ -23,7 +23,12 @@ except ImportError:
 
 class BoilerplateGenerator:
     def __init__(
-        self, schema_path: str, output_dir: str = None, template_type: str = "default"
+        self,
+        schema_path: str,
+        output_dir: str = None,
+        template_type: str = "default",
+        fleet_pack: bool | None = None,
+        fleet_pack_path: str | None = None,
     ):
         self.schema_path = Path(schema_path)
         self.output_dir = Path(output_dir) if output_dir else Path.cwd()
@@ -35,6 +40,34 @@ class BoilerplateGenerator:
             else Path(__file__).parent.parent.parent / "templates"
         )
         self.jinja_env = Environment(loader=FileSystemLoader(str(self.templates_dir)))
+        # Prefer explicit CLI flag; else schema workflows.fleet_standards; default True
+        # when CI is emitted so new projects get fleet-aware Actions.
+        if fleet_pack is not None:
+            self.fleet_pack = fleet_pack
+        else:
+            self.fleet_pack = bool(
+                self.schema.get("workflows", {}).get("fleet_standards", True)
+            )
+        self.fleet_pack_path = (
+            Path(fleet_pack_path)
+            if fleet_pack_path
+            else self._default_fleet_pack_path()
+        )
+
+    @staticmethod
+    def _default_fleet_pack_path() -> Path:
+        """Resolve pack: package data, repo pack/, then workstation plans pack."""
+        pkg_pack = Path(__file__).resolve().parent / "fleet_pack"
+        if pkg_pack.is_dir() and (pkg_pack / ".github" / "workflows").is_dir():
+            return pkg_pack
+        repo_root = Path(__file__).resolve().parent.parent.parent
+        vendored = repo_root / "pack" / "fleet-standards"
+        if vendored.is_dir():
+            return vendored
+        workstation = Path("/root/work/plans/fleet-standards/pack")
+        if workstation.is_dir():
+            return workstation
+        return pkg_pack
 
     def load_schema(self) -> Dict[str, Any]:
         """Load and validate the project schema."""
@@ -52,6 +85,10 @@ class BoilerplateGenerator:
     def generate(self):
         """Generate the complete boilerplate."""
         click.echo("🚀 Generating agentic development boilerplate...")
+        click.echo(
+            "ℹ️  Prefer tz-forge `tz-new` for new fleet-aware product repos: "
+            "https://github.com/tzervas/tz-forge"
+        )
 
         # Create output directory structure
         self.create_directory_structure()
@@ -65,8 +102,70 @@ class BoilerplateGenerator:
         self.generate_ci_cd()
         self.generate_git_config()
         self.generate_documentation()
+        if self.fleet_pack:
+            self.inject_fleet_pack()
 
         click.echo("✅ Boilerplate generation complete!")
+
+    def inject_fleet_pack(self):
+        """Copy fleet-standard workflows/docs into the generated project.
+
+        Source order:
+        1. ``--fleet-pack-path`` / resolved default (vendored ``pack/fleet-standards``)
+        2. Workstation path ``/root/work/plans/fleet-standards/pack`` (dev note)
+
+        If the pack is missing, print a shell-out note instead of failing generation.
+        """
+        click.echo("📦 Injecting fleet standards pack...")
+        pack = self.fleet_pack_path
+        if not pack.is_dir():
+            click.echo(
+                "⚠️  Fleet pack not found at "
+                f"{pack}. Shell out to apply later:\n"
+                "    bash /root/work/plans/fleet-standards/scripts/"
+                "apply-fleet-standards.sh <output-dir>\n"
+                "  or copy from https://github.com/tzervas/tz-forge "
+                "(modules/fleet)."
+            )
+            return
+
+        # Workflows
+        src_wf = pack / ".github" / "workflows"
+        dst_wf = self.output_dir / ".github" / "workflows"
+        if src_wf.is_dir():
+            dst_wf.mkdir(parents=True, exist_ok=True)
+            for yml in sorted(src_wf.glob("*.yml")):
+                shutil.copy2(yml, dst_wf / yml.name)
+                click.echo(f"  + .github/workflows/{yml.name}")
+
+        # Docs
+        src_docs = pack / "docs" / "FLEET_STANDARDS.md"
+        if src_docs.is_file():
+            docs_dir = self.output_dir / "docs"
+            docs_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_docs, docs_dir / "FLEET_STANDARDS.md")
+            click.echo("  + docs/FLEET_STANDARDS.md")
+
+        # Helper scripts
+        src_scripts = pack / "scripts"
+        if src_scripts.is_dir():
+            scripts_dir = self.output_dir / "scripts"
+            scripts_dir.mkdir(parents=True, exist_ok=True)
+            for script in sorted(src_scripts.iterdir()):
+                if script.is_file():
+                    dest = scripts_dir / script.name
+                    shutil.copy2(script, dest)
+                    if script.suffix == ".sh":
+                        os.chmod(dest, 0o755)
+                    click.echo(f"  + scripts/{script.name}")
+
+        # Optional PR template
+        src_pr = pack / ".github" / "PULL_REQUEST_TEMPLATE.md"
+        if src_pr.is_file():
+            gh = self.output_dir / ".github"
+            gh.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_pr, gh / "PULL_REQUEST_TEMPLATE.md")
+            click.echo("  + .github/PULL_REQUEST_TEMPLATE.md")
 
     def create_directory_structure(self):
         """Create the basic directory structure."""
@@ -522,10 +621,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 @click.option(
     "--output", "-o", default=None, help="Output directory (default: current directory)"
 )
-def main(schema, output, template):
-    """Generate agentic development boilerplate from schema."""
+@click.option(
+    "--fleet-pack/--no-fleet-pack",
+    default=None,
+    help=(
+        "Inject tzervas fleet-standard workflows/docs into the generated project "
+        "(default: on when not set in schema). Prefer tz-forge tz-new for new repos."
+    ),
+)
+@click.option(
+    "--fleet-pack-path",
+    default=None,
+    help="Path to fleet-standards pack (default: pack/fleet-standards in this repo)",
+)
+def main(schema, output, template, fleet_pack, fleet_pack_path):
+    """Generate agentic development boilerplate from schema.
+
+    Prefer https://github.com/tzervas/tz-forge ``tz-new`` for new product repos.
+    """
     try:
-        generator = BoilerplateGenerator(schema, output, template)
+        generator = BoilerplateGenerator(
+            schema,
+            output,
+            template,
+            fleet_pack=fleet_pack,
+            fleet_pack_path=fleet_pack_path,
+        )
         generator.generate()
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)

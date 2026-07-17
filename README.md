@@ -7,12 +7,34 @@
 
 A comprehensive template system for generating agentic development workflows and automation infrastructure.
 
-**Version**: 1.1.1
+**Version**: 1.1.4
 **Repository**: https://github.com/tzervas/agentic-dev-boilerplate
+
+## Prefer tz-forge for new projects
+
+**New product repositories should use [tz-forge](https://github.com/tzervas/tz-forge) `tz-new`**, not this generator:
+
+```bash
+git clone https://github.com/tzervas/tz-forge.git
+cd tz-forge
+python3 cli/tz_new.py --list
+python3 cli/tz_new.py python-lib my-lib --assistant=solo-ai
+# optional: pip install -e . && tz-new rust-lib my-crate --assistant=fractal-swarm
+```
+
+| Need | Prefer |
+|------|--------|
+| Fleet modules, project kinds, assistant profiles | **`tz-new`** ([tz-forge](https://github.com/tzervas/tz-forge)) |
+| ADK + MCP + uv agent template | [python-adk-mcp-uv-template](https://github.com/tzervas/python-adk-mcp-uv-template) |
+| Schema-driven multi-agent instruction/workflow emit | **this** package (legacy / specialized) |
+
+When this generator still emits CI, pass **`--fleet-pack`** (default on) to copy the
+tzervas fleet workflow pack into the output (see [docs/FLEET_STANDARDS.md](docs/FLEET_STANDARDS.md)
+and vendored `pack/fleet-standards/`). Agent rules: [AGENTS.md](AGENTS.md).
 
 ## Overview
 
-This project provides a complete foundation for building agentic development systems with automated multi-agent coordination, intelligent task tracking, and comprehensive CI/CD pipelines. It includes specialized agents for planning, testing, debugging, deployment, and system engineering, all working together to streamline development workflows.
+This project provides a foundation for building agentic development systems with multi-agent coordination, task tracking, and CI/CD scaffolding. It includes specialized agent instruction templates for planning, testing, debugging, deployment, and system engineering.
 
 ## Quick Start
 
@@ -35,7 +57,7 @@ uv pip install -e .
 Create a new project with the CLI:
 
 ```bash
-# Generate boilerplate for your project
+# Generate boilerplate for your project (injects fleet pack by default)
 agentic-dev-boilerplate --schema project-schema.yaml --output ./my-project
 
 # Or use short options
@@ -43,11 +65,29 @@ agentic-dev-boilerplate -s my-schema.yaml -o ./my-project
 
 # Use a specific template (default: default)
 agentic-dev-boilerplate --template bootdisk-agentic-structure --schema my-schema.yaml --output ./my-project
+
+# Explicit fleet pack control
+agentic-dev-boilerplate -s my-schema.yaml -o ./my-project --fleet-pack
+agentic-dev-boilerplate -s my-schema.yaml -o ./my-project --no-fleet-pack
+
+# Custom pack path (workstation or checkout)
+agentic-dev-boilerplate -s my-schema.yaml -o ./my-project \
+  --fleet-pack-path /root/work/plans/fleet-standards/pack
+```
+
+If the pack is unavailable at generate time, apply later:
+
+```bash
+bash /root/work/plans/fleet-standards/scripts/apply-fleet-standards.sh ./my-project
+# or copy modules/fleet from https://github.com/tzervas/tz-forge
 ```
 
 **Available Templates:**
 - `default`: Standard agentic development boilerplate
 - `bootdisk-agentic-structure`: Bootdisk project structure with integrated agentic workflows
+
+Schema flag (optional): set `workflows.fleet_standards: true|false` in the project schema
+to control fleet injection when CLI flags are omitted.
 
 ## Prerequisites
 
