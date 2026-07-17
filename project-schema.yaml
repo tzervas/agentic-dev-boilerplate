@@ -78,6 +78,9 @@ workflows:
   ci_cd: true
   gitops: false
   security_scanning: true
+  # Inject tzervas fleet CI/security workflows (see pack/fleet-standards).
+  # Prefer tz-forge tz-new for new product repos: https://github.com/tzervas/tz-forge
+  fleet_standards: true
   dependency_management: true
   multi_agent_coordination: true
 
