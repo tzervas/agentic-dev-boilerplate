@@ -1,5 +1,10 @@
 # Agentic Dev Boilerplate
 
+<!-- FLEET-BADGES:BEGIN -->
+[![CI](https://github.com/tzervas/agentic-dev-boilerplate/actions/workflows/fleet-ci.yml/badge.svg?branch=main)](https://github.com/tzervas/agentic-dev-boilerplate/actions/workflows/fleet-ci.yml?query=branch%3Amain)
+[![Security](https://github.com/tzervas/agentic-dev-boilerplate/actions/workflows/fleet-security.yml/badge.svg?branch=main)](https://github.com/tzervas/agentic-dev-boilerplate/actions/workflows/fleet-security.yml?query=branch%3Amain)
+<!-- FLEET-BADGES:END -->
+
 A comprehensive template system for generating agentic development workflows and automation infrastructure.
 
 **Version**: 1.1.1
