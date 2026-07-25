@@ -1,5 +1,11 @@
 # User Guide
 
+> **Caveat (2026-07-25):** Install and default-generate examples in this guide may fail on current
+> `main` (unpublished `chngbrgr` hard dep; incomplete default template path). See measured
+> workarounds and capability tags in **[CURRENT-STATE.md](CURRENT-STATE.md)** and the concise
+> quickstart in **[../README.md](../README.md)**. Prefer [tz-forge](https://github.com/tzervas/tz-forge)
+> `tz-new` for new product repos.
+
 ## Getting Started
 
 This guide will help you get started with the `agentic-dev-boilerplate` package to generate customized development workflows for your projects.

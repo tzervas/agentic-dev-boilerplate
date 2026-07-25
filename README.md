@@ -5,314 +5,117 @@
 [![Security](https://github.com/tzervas/agentic-dev-boilerplate/actions/workflows/fleet-security.yml/badge.svg?branch=main)](https://github.com/tzervas/agentic-dev-boilerplate/actions/workflows/fleet-security.yml?query=branch%3Amain)
 <!-- FLEET-BADGES:END -->
 
-A comprehensive template system for generating agentic development workflows and automation infrastructure.
+Schema-driven generator for **agent instruction files**, GitHub workflow stubs, and related
+scaffolding for multi-agent development layouts.
 
-**Version**: 1.1.4
-**Repository**: https://github.com/tzervas/agentic-dev-boilerplate
+**Prefer [tz-forge](https://github.com/tzervas/tz-forge) `tz-new` for new product repositories.**
+This package is the specialized / legacy path when you need schema-driven multi-agent instruction
+emit and optional fleet workflow injection.
 
-## Prefer tz-forge for new projects
+| Need | Prefer |
+|------|--------|
+| Fleet modules, project kinds, assistant profiles | **`tz-new`** ([tz-forge](https://github.com/tzervas/tz-forge)) |
+| ADK + MCP + uv agent template | [python-adk-mcp-uv-template](https://github.com/tzervas/python-adk-mcp-uv-template) |
+| Schema-driven multi-agent instruction/workflow emit | **this** package |
 
-**New product repositories should use [tz-forge](https://github.com/tzervas/tz-forge) `tz-new`**, not this generator:
+Measured truth (install, tests, what actually generates): **[docs/CURRENT-STATE.md](docs/CURRENT-STATE.md)**.  
+History and roadmap: [docs/DEVELOPMENT-PATH.md](docs/DEVELOPMENT-PATH.md) · [docs/ROADMAP.md](docs/ROADMAP.md) · [docs/README.md](docs/README.md).
+
+## Status snapshot (read before installing)
+
+As of the last docs measurement (`main` @ `ad83a30`):
+
+- **Source install** (`uv pip install -e .`) **fails** — hard dependency `chngbrgr` is not on PyPI.
+- **Default** template generation on current `main` **fails** (incomplete repo-root template tree).
+- **Bootdisk** template generation + **fleet pack inject** **work** from a checkout with runtime deps.
+- **PyPI `1.1.2`** still installs and can generate a default instruction tree (older CLI; no fleet-pack flags).
+
+Do not treat CI badges alone as a green product gate; see CURRENT-STATE for Actions samples.
+
+## Quickstart (< 1 minute)
+
+### Option A — new product repo (recommended)
 
 ```bash
 git clone https://github.com/tzervas/tz-forge.git
 cd tz-forge
 python3 cli/tz_new.py --list
 python3 cli/tz_new.py python-lib my-lib --assistant=solo-ai
-# optional: pip install -e . && tz-new rust-lib my-crate --assistant=fractal-swarm
 ```
 
-| Need | Prefer |
-|------|--------|
-| Fleet modules, project kinds, assistant profiles | **`tz-new`** ([tz-forge](https://github.com/tzervas/tz-forge)) |
-| ADK + MCP + uv agent template | [python-adk-mcp-uv-template](https://github.com/tzervas/python-adk-mcp-uv-template) |
-| Schema-driven multi-agent instruction/workflow emit | **this** package (legacy / specialized) |
+### Option B — PyPI artifact (last published generator)
 
-When this generator still emits CI, pass **`--fleet-pack`** (default on) to copy the
-tzervas fleet workflow pack into the output (see [docs/FLEET_STANDARDS.md](docs/FLEET_STANDARDS.md)
-and vendored `pack/fleet-standards/`). Agent rules: [AGENTS.md](AGENTS.md).
+Measured: installs and completes default generate.
 
-## Overview
-
-This project provides a foundation for building agentic development systems with multi-agent coordination, task tracking, and CI/CD scaffolding. It includes specialized agent instruction templates for planning, testing, debugging, deployment, and system engineering.
-
-## Quick Start
-
-### Installation
-
-#### From PyPI (Recommended)
 ```bash
-uv pip install agentic-dev-boilerplate
+uv venv .venv && source .venv/bin/activate
+uv pip install 'agentic-dev-boilerplate==1.1.2'
+agentic-dev-boilerplate --help
+agentic-dev-boilerplate -s /path/to/schema.yaml -o ./my-project
 ```
 
-#### From Source
+Use a schema shaped like the repo’s `project-schema.yaml` (`project`, `languages`, `agents`,
+`workflows` as a **map** of flags).
+
+### Option C — this checkout, bootdisk + fleet pack (current `main`)
+
+Measured working path when full `uv pip install -e .` is blocked:
+
 ```bash
 git clone https://github.com/tzervas/agentic-dev-boilerplate
 cd agentic-dev-boilerplate
-uv pip install -e .
+uv venv .venv && source .venv/bin/activate
+uv pip install jinja2 pyyaml click
+export PYTHONPATH=src
+python src/agentic_dev_boilerplate/generate_boilerplate.py \
+  --template bootdisk-agentic-structure \
+  -s test-bootdisk-schema.yaml \
+  -o ./out-bootdisk
 ```
 
-### Generate Boilerplate
+Expect fleet workflows under `out-bootdisk/.github/workflows/` (`fleet-ci.yml`, …).  
+Default (`project-schema.yaml` without `--template`) is **broken on current main** until the
+template-path defect is fixed (see roadmap).
 
-Create a new project with the CLI:
+### CLI flags (current tree)
 
-```bash
-# Generate boilerplate for your project (injects fleet pack by default)
-agentic-dev-boilerplate --schema project-schema.yaml --output ./my-project
-
-# Or use short options
-agentic-dev-boilerplate -s my-schema.yaml -o ./my-project
-
-# Use a specific template (default: default)
-agentic-dev-boilerplate --template bootdisk-agentic-structure --schema my-schema.yaml --output ./my-project
-
-# Explicit fleet pack control
-agentic-dev-boilerplate -s my-schema.yaml -o ./my-project --fleet-pack
-agentic-dev-boilerplate -s my-schema.yaml -o ./my-project --no-fleet-pack
-
-# Custom pack path (workstation or checkout)
-agentic-dev-boilerplate -s my-schema.yaml -o ./my-project \
-  --fleet-pack-path /root/work/plans/fleet-standards/pack
+```text
+agentic-dev-boilerplate -s SCHEMA -o OUT
+  -t / --template TEXT
+  --fleet-pack / --no-fleet-pack
+  --fleet-pack-path PATH
 ```
 
-If the pack is unavailable at generate time, apply later:
-
-```bash
-bash /root/work/plans/fleet-standards/scripts/apply-fleet-standards.sh ./my-project
-# or copy modules/fleet from https://github.com/tzervas/tz-forge
-```
-
-**Available Templates:**
-- `default`: Standard agentic development boilerplate
-- `bootdisk-agentic-structure`: Bootdisk project structure with integrated agentic workflows
-
-Schema flag (optional): set `workflows.fleet_standards: true|false` in the project schema
-to control fleet injection when CLI flags are omitted.
+Agent rules for assistants: [AGENTS.md](AGENTS.md). Fleet pack notes: [docs/FLEET_STANDARDS.md](docs/FLEET_STANDARDS.md).
 
 ## Prerequisites
 
-- **Python** 3.11 or later
-- **UV** (fast Python package manager) - install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- **Git** 2.30+ (for version control)
-- **GPG** (for commit signing)
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) recommended
+- Git
 
-## Development Setup
-
-1. **Install UV (fast Python package manager)**
-   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
-
-2. **Clone the repository**
-   ```bash
-   git clone https://github.com/tzervas/agentic-dev-boilerplate
-   cd agentic-dev-boilerplate
-   ```
-
-3. **Set up development environment**
-   ```bash
-   uv venv
-   uv pip install -e .
-   ```
-
-4. **Configure Git**
-   ```bash
-   python scripts/git_setup.py --setup
-   ```
-
-## Testing
-
-### Comprehensive Test Suite
-
-Run the complete validation suite:
+## Development checks
 
 ```bash
-./test-package.sh
+# Prefer after install is fixed; today lock/install fail on chngbrgr — see CURRENT-STATE
+uv pip install -e .    # currently FAILS on main
+./test-package.sh      # measured 3/12 at last docs run
+# Workaround used in measurement:
+uv pip install jinja2 pyyaml click pytest
+PYTHONPATH=src python -m pytest tests/ -o "markers=slow: slow tests"
 ```
 
-### Docker Testing
+## Project layout (short)
 
-For isolated testing and validation:
-
-```bash
-# Build and run tests
-docker-compose up --build
-
-# Or build and test manually
-docker build -t agentic-boilerplate-test .
-docker run --rm agentic-boilerplate-test
+```text
+src/agentic_dev_boilerplate/   # generator, tmp manager, packaged templates + fleet_pack
+templates/                     # repo-root templates (bootdisk + partial default)
+pack/fleet-standards/          # vendored fleet workflows/docs
+project-schema.yaml            # example schema
+tests/
+docs/                          # PM suite + guides
 ```
-
-## Development Workflow
-
-### 1. Task Planning
-Use the planner agent to break down features and create implementation roadmaps. Tasks are tracked in `tasking/tracker.yaml` with context files stored in `tasking/context/`.
-
-### 2. Implementation
-- Create feature branches: `git checkout -b feature/task-name`
-- Implement changes following project standards
-- Write comprehensive tests for new functionality
-
-### 3. Testing & Validation
-```bash
-# Run validation suite
-python scripts/validation_scripts.py
-
-# Run tests
-uv run pytest
-```
-
-### 4. Create Pull Request
-```bash
-# Create PR with automation
-python scripts/create_pr_local.py
-
-# Or use GitHub CLI
-gh pr create --fill
-```
-
-### 5. Code Review
-Pull requests are automatically enriched with labels and milestones. Validation runs automatically on PR events to ensure code quality and standards compliance.
-
-## Multi-Agent Coordination
-
-The system supports collaborative problem-solving through coordinated multi-agent workflows.
-
-### Starting Multi-Agent Sessions
-```bash
-# Solve complex problems with multiple agents
-python scripts/multi_agent_solver.py \
-  --problem "Implement user authentication system" \
-  --agents planner tester debugger deployer \
-  --consensus-threshold 0.8
-```
-
-### Agent Coordination Features
-- **Orchestrated Problem Decomposition**: Complex tasks are automatically broken down into manageable components
-- **Cross-Agent Validation**: Solutions are validated by multiple specialized agents
-- **Consensus Building**: Team agreement on optimal approaches and solutions
-- **Collaborative Tracking**: Shared progress monitoring and status updates
-- **Coordinated Execution**: Synchronized implementation across all participating agents
-
-### Available Agents
-
-- **Planner**: Task decomposition, roadmap generation, and agent routing
-- **Tester**: Validation suites, test execution, and result analysis
-- **Debugger**: Root cause analysis, log processing, and patch development
-- **Deployer**: Production deployment, rollback orchestration, and change management
-- **Systems Engineer**: Hardware emulation, IOMMU/VFIO configuration, and GPU passthrough
-- **DevOps Specialist**: Infrastructure automation, CI/CD pipelines, and network orchestration
-- **Orchestrator**: Multi-agent coordination, collaborative problem-solving, and team consensus
-- **Software Engineer**: Code implementation, refactoring, and architecture design
-- **AI Engineer**: ML model development, AI integration, and data pipeline optimization
-
-### GitHub Integration
-Label issues or pull requests to trigger multi-agent coordination:
-- `testing` → Involves tester agent
-- `debug` → Involves debugger agent
-- `deploy` → Involves deployer agent
-- `infra` → Involves systems engineer and DevOps specialist
-
-## Project Structure
-
-```
-├── .github/
-│   ├── instructions/          # Agent instruction files
-│   ├── prompts/              # Reusable prompt templates
-│   ├── scripts/              # PR automation scripts
-│   └── workflows/            # GitHub Actions CI/CD
-├── scripts/                  # Utility scripts
-├── tasking/                  # Task tracking system
-│   ├── tracker.yaml         # Main task tracker
-│   ├── context/             # Task context files
-│   └── plan.md              # Project roadmap
-├── docs/                    # Documentation
-├── src/                     # Source code
-├── tests/                   # Test files
-├── requirements.txt         # Python dependencies
-└── README.md
-```
-
-## Agent System
-
-### Core Agents
-
-- **Planner**: Task decomposition, roadmap generation, and agent routing
-- **Tester**: Validation suites, test execution, and result analysis
-- **Debugger**: Root cause analysis, log processing, and patch development
-- **Deployer**: Production deployment, rollback orchestration, and change management
-- **Systems Engineer**: Hardware emulation, IOMMU/VFIO configuration, and GPU passthrough
-- **DevOps Specialist**: Infrastructure automation, CI/CD pipelines, and network orchestration
-- **Orchestrator**: Multi-agent coordination, collaborative problem-solving, and team consensus
-- **Software Engineer**: Code implementation, refactoring, and architecture design
-- **AI Engineer**: ML model development, AI integration, and data pipeline optimization
-
-### Agent Instructions
-Each agent has specialized instructions in `.github/instructions/` that define their role, responsibilities, workflow integration patterns, and success metrics.
-
-## Quality Assurance
-
-### Automated Validation
-- **PR Automation**: Automatic labeling, milestone assignment, and issue linking
-- **Code Quality**: Linting, formatting, and type checking
-- **Testing**: Unit, integration, and system test coverage
-- **Security**: Dependency scanning and vulnerability assessment
-
-### Manual Reviews
-- Code review requirements and standards
-- Architecture decision documentation
-- Performance and scalability considerations
-- Security impact analysis
-
-## Contributing
-
-1. **Follow the workflow**: Use task tracking and agent coordination for all changes
-2. **Write tests**: Ensure comprehensive test coverage for new functionality
-3. **Sign commits**: All commits must be GPG signed for verification
-4. **Create pull requests**: Use the automated PR creation tools
-
-### Commit Standards
-- Use conventional commit format: `type(scope): description`
-- Sign all commits with GPG: `git commit -S`
-- Reference task IDs in commit messages when applicable
-
-### Pull Request Requirements
-- All automated validation checks must pass
-- Appropriate test coverage maintained
-- Documentation updated for any user-facing changes
-- Task tracker updated with completion status
-
-## CI/CD Pipeline
-
-### Pipeline Stages
-- **Validate**: Code linting, testing, and security scanning
-- **Build**: Package building and artifact creation
-- **Deploy**: Staging deployment and production releases
-
-### Quality Gates
-- Code linting and formatting checks
-- Test execution with coverage requirements
-- Security vulnerability scanning
-- Minimum 80% code coverage threshold
-
-## Security
-
-- **Commit Signing**: All commits must be GPG signed for authenticity
-- **Dependencies**: Regular security scanning and dependency updates
-- **Secrets**: Automated detection and prevention of exposed secrets
-
-## Documentation
-
-- **API Reference**: Comprehensive API documentation
-- **User Guides**: Setup and usage instructions
-- **Contributing Guide**: Development workflow and standards
-
-## Support
-
-- **Issues**: Use GitHub issues with appropriate labels for bug reports and feature requests
-- **Discussions**: Technical discussions and community Q&A
-- **Documentation**: Comprehensive guides available in the `/docs` directory
 
 ## License
 
-See LICENSE file for details.
+MIT — see [LICENSE](LICENSE).
