@@ -1,8 +1,13 @@
 # Agentic Dev Boilerplate - Validation & Examples
 
+> **STALE (2026-07-25):** The “12/12 tests passed” capture below is **historical and no longer true**
+> on current `main`. Re-measurement ran `./test-package.sh` and saw **3/12 passed**, with source
+> install blocked on unpublished `chngbrgr` and default generation failing. Trust
+> **[CURRENT-STATE.md](CURRENT-STATE.md)** for live results; do not cite this file as proof of health.
+
 ## Testing Results
 
-### Comprehensive Test Suite
+### Comprehensive Test Suite (historical snapshot — do not treat as current)
 
 ```
 🧪 Running comprehensive package tests with UV...

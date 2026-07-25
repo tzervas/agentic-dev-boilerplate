@@ -1,5 +1,9 @@
 # Long-Term Memory System Design
 
+> **Status: design only (not implemented on `main` as of 2026-07-25).** There is no
+> `src/agentic_dev_boilerplate/long_term_memory/` package in-tree. Treat this document as a
+> proposal, not a shipped feature. See [ROADMAP.md](ROADMAP.md) item R11.
+
 ## Overview
 
 The long-term memory system extends the temporary context management with persistent, semantically-aware storage for project-wide memories and learnings. This system captures global project relevance and enables intelligent context retrieval across sessions.

@@ -1,5 +1,10 @@
 # API Documentation
 
+> **Caveat (2026-07-25):** CLI examples assume a working install and default template tree.
+> On current `main`, source install and default generation were measured **broken**; see
+> **[CURRENT-STATE.md](CURRENT-STATE.md)**. PyPI `1.1.2` uses an older CLI (no `--template` /
+> fleet-pack flags).
+
 ## Overview
 
 The `agentic-dev-boilerplate` package provides a command-line tool for generating customized agentic development workflows tailored to specific projects.
