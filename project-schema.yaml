@@ -3,7 +3,7 @@ project:
   description: "Templatized repository for generating agentic development workflows and automations"
   repository: "https://github.com/tzervas/agentic-dev-boilerplate"
   private: true
-  version: "1.1.1"
+  version: "1.1.4"
   license: "MIT License"
 
 languages:
