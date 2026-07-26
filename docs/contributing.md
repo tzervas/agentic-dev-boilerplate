@@ -157,18 +157,38 @@ python scripts/validate_project.py
 
 ### Version Bumping
 
-Update version in:
-- `pyproject.toml`
-- `project-schema.yaml`
-- `CHANGELOG.md`
+**Do not update versions by hand.** This list used to be maintained manually and it went wrong:
+it omitted `src/agentic_dev_boilerplate/__init__.py`, and that file drifted to `1.1.2` while
+`pyproject.toml` reached `1.1.4` and `project-schema.yaml` sat at `1.1.1` — three files, three
+answers.
+
+Every version file is now listed in [`.cz.toml`](../.cz.toml) `version_files`, and `cz bump`
+moves them together:
+
+- `pyproject.toml` — `[project] version`
+- `src/agentic_dev_boilerplate/__init__.py` — `__version__`
+- `project-schema.yaml` — `project.version`
+- `.cz.toml` itself
+
+```bash
+cz bump --yes --dry-run   # show what would happen, change nothing
+cz bump                   # move every version file + create the tag
+```
+
+`CHANGELOG.md` is written by hand, as before.
+
+Full policy — including why `major_version_zero` is **deliberately absent** here, and why **no
+agent may cut or propose a 2.0.0 release** — is in [VERSIONING.md](VERSIONING.md).
 
 ### Creating Releases
 
-1. Create a release branch
-2. Update version numbers
+1. Create a release branch off `dev`
+2. `cz bump` (moves every version file, creates the tag)
 3. Update CHANGELOG.md
-4. Create GitHub release
-5. Publish to PyPI
+4. Merge `dev` → `main` with a **merge commit**, never a squash
+5. Create GitHub release
+6. **Publish to PyPI** — a separate, deliberate step. A GitHub Release is *not* a PyPI
+   publication; until this runs, the version is not released to consumers.
 
 ## Communication
 
