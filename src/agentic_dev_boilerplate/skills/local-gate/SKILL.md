@@ -6,10 +6,37 @@ license: MIT
 
 # Local gate
 
+Replaces most of the Copilot `tester` persona. Tests are the gate, not a role.
+
+## Command preference
+
 ```bash
+# 1. repo-declared
+./scripts/check.sh --quick
 ./scripts/check.sh
-uv run ruff check . && uv run ruff format --check . && uv run pytest -q
-cargo clippy --all-targets --all-features -- -D warnings && cargo test --all-features
+
+# 2. Python house-rules
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest -q
+
+# 3. Rust house-rules
+cargo fmt --all --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --all-features
 ```
 
-Collect test_*.py. Never use python_files as an allow-list. Skipped CI is not success.
+## Rules
+
+- Collect `test_*.py`. Never use pytest `python_files` as an allow-list.
+- Skipped CI is not success.
+- Local command must match CI. If they diverge, that is the bug.
+- One finding per fix cycle when adopting a linter.
+
+## Output
+
+```text
+gate: <command>
+result: pass | fail
+first_failure: <file:line or none>
+```

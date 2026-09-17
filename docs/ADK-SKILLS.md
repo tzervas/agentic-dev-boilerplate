@@ -20,7 +20,8 @@ src/agentic_dev_boilerplate/
     commit-prep/SKILL.md
 ```
 
-The spec file is **SKILL.md** (agentskills.io / ADK 1.25+ / 2.x). There is no official `SKILLS.md` format. The index is a courtesy.
+The spec file is **SKILL.md** ([agentskills.io](https://agentskills.io/specification),
+ADK 1.25+ / 2.x). There is no official `SKILLS.md` format. The index is a courtesy.
 
 ## Persona collapse
 

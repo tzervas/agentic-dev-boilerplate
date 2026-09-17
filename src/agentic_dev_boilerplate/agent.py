@@ -3,6 +3,9 @@
 This replaces the Copilot .github/agents/*.agent.md forest.
 The generator CLI (generate_boilerplate.py) is legacy; tz-new births
 product repos. This module is the runnable ADK surface.
+
+Skills follow agentskills.io + ADK SkillToolset (L1 metadata, L2 body,
+L3 references/scripts).
 """
 
 from __future__ import annotations
@@ -50,6 +53,7 @@ def build_root_agent():  # type: ignore[no-untyped-def]
     )
 
 
+# ADK discovery name
 root_agent = None
 
 

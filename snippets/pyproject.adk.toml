@@ -1,0 +1,5 @@
+# merge into pyproject.toml
+[project.optional-dependencies]
+adk = ["google-adk>=2,<3"]
+[tool.ruff.lint]
+select = ["E","F","W","I","UP","B","SIM","RUF"]

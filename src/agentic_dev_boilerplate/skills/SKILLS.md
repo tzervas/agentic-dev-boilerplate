@@ -1,6 +1,7 @@
 # Skills index (L1 catalog)
 
-Not a spec file. The spec file is `SKILL.md` inside each directory.
+Not a spec file. The spec file is `SKILL.md` inside each directory
+([agentskills.io](https://agentskills.io/specification), ADK 1.25+/2.x).
 
 | name | when to load |
 |---|---|
@@ -8,7 +9,7 @@ Not a spec file. The spec file is `SKILL.md` inside each directory.
 | plan-slice | break a goal into one in-scope change |
 | implement-change | write or edit code in named paths |
 | one-finding | agent starts bundling concerns |
-| reuse-first | user asks for a template, boilerplate, or new repo |
+| reuse-first | "we should have a standard / template / agent for X" |
 | local-gate | run the repo's own tests / linters |
 | diagnose | a test or CI job failed |
 | claim-gate | README or chat claim vs lockfile / STATUS |
