@@ -20,4 +20,3 @@ do_not: append diaries to AGENTS.md; regenerate .github/agents
 ```
 
 PERSONAL.md is human-authored. Do not rewrite it.
-End of session: one line in docs/decisions/YYYY-MM-DD.md.
